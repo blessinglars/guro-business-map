@@ -589,7 +589,8 @@ function initMap(){
     const mpp=z=>156543.03*Math.cos(37.49*Math.PI/180)/Math.pow(2,z);
     const below = map.getLayer('building-3d') ? 'building-3d' : undefined; // streets under the 3D buildings
     addGuroLayers(below);
-    map.fitBounds(GURO_BOX,{padding:{top:40,bottom:40,left:320,right:40},pitch:45,bearing:-12,duration:0});
+    const wide=map.getContainer().clientWidth>700;
+    map.fitBounds(GURO_BOX,{padding:wide?{top:40,bottom:40,left:320,right:40}:{top:190,bottom:20,left:20,right:20},pitch:45,bearing:-12,duration:0});
     map.addLayer({id:'catch',type:'line',source:'corr',layout:{'line-cap':'round','line-join':'round'},
       paint:{'line-color':['get','ccol'],'line-opacity':0.16,
         'line-width':['interpolate',['exponential',2],['zoom'],10,2*P.catchM/mpp(10),20,2*P.catchM/mpp(20)]}}, below);
