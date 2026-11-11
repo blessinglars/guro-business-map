@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G³ Dig Once · Business Model Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+:root{--green:#1f3a2b;--green2:#2c4a37;--gold:#c2a24e;--yellow:#f6d44a;--cream:#f3efe4;--paper:#fffdf7;--ink:#1d2520;--muted:#6b7366;--line:#e2dccb;--red:#b8462f;--ok:#3f7d4e;--blue:#3b6ea8;--orange:#d9772b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Poppins,system-ui,sans-serif;color:var(--ink);background:var(--cream)}
+h1,h2,h3,.osw{font-family:Oswald,Impact,sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:0}
+button{font:inherit;cursor:pointer}
+.border-deco{height:10px;background:repeating-linear-gradient(90deg,var(--gold) 0 2px,transparent 2px 14px),var(--green);opacity:.9}
+/* ---------- intro ---------- */
+#intro{position:fixed;inset:0;z-index:50;background:var(--green);color:#fff;overflow:auto;display:flex;flex-direction:column}
+#intro .wrap{max-width:1080px;margin:0 auto;padding:48px 28px 32px;flex:1}
+.logo{width:58px;height:58px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-family:Oswald;font-size:24px;font-weight:700}
+.title{font-size:clamp(34px,5vw,58px);line-height:1;margin-top:22px}
+.title span{display:block;color:var(--yellow)}
+.lead{max-width:640px;color:#dfe6dc;margin:16px 0 30px;font-size:15px;line-height:1.55}
+.who{font-size:20px;color:var(--gold);margin-bottom:14px}
+.actors{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.actor{background:var(--green2);border:1px solid #4d6b55;border-radius:16px;padding:18px;text-align:left;color:#fff;transition:.15s;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.actor:hover{border-color:var(--yellow);transform:translateY(-2px)}
+.actor .ic{font-size:26px}
+.actor h3{font-size:19px;color:var(--yellow)}
+.actor p{margin:0;font-size:13px;color:#d5ddd2;line-height:1.45}
+.actor .wants{margin-top:auto;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.06em}
+.foot{padding:14px 28px;font-size:12px;color:#a9b8a7}
+/* ---------- app ---------- */
+#app{position:fixed;inset:0;display:grid;grid-template-rows:auto 1fr}
+header{background:var(--green);color:#fff;display:flex;align-items:center;gap:14px;padding:10px 16px;flex-wrap:wrap}
+header .logo{width:40px;height:40px;font-size:17px}
+header .brand{line-height:1.05}
+header .brand b{font-family:Oswald;font-size:19px;display:block}
+header .brand small{font-family:Oswald;color:var(--yellow);font-size:12px;letter-spacing:.05em}
+.seg{display:inline-flex;background:#ffffff14;border:1px solid #ffffff30;border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:#e7ece5;padding:6px 12px;border-radius:999px;font-size:12px;white-space:nowrap}
+.seg button.on{background:var(--yellow);color:var(--green);font-weight:600}
+.spacer{flex:1}
+.chip{border:1px solid var(--gold);color:#fff;background:transparent;border-radius:999px;padding:6px 12px;font-size:12px}
+.chip b{color:var(--yellow)}
+main{position:relative;display:grid;grid-template-columns:1fr 410px;min-height:0}
+#map{position:relative;min-height:0}
+#panel{background:var(--cream);border-left:1px solid var(--line);overflow:auto;min-height:0}
+.pcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px}
+.kicker{font-family:Oswald;font-size:12px;letter-spacing:.08em;color:var(--gold);text-transform:uppercase}
+.pcard h2{font-size:20px;margin:2px 0 8px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
+.kpi .l{font-family:Oswald;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:Oswald;font-size:24px;font-weight:600;line-height:1.1}
+.kpi .s{font-size:11px;color:var(--muted)}
+.good{color:var(--ok)}.bad{color:var(--red)}
+.rows{font-size:13px}
+.rows .r{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.rows .r:last-child{border-bottom:0}
+.rows .r span:last-child{font-weight:600;text-align:right;white-space:nowrap}
+.rows .r.tot{border-top:1px solid var(--ink);border-bottom:0;font-weight:600}
+.verdict{border-radius:14px;padding:14px;color:#fff;background:var(--green)}
+.verdict.no{background:var(--red)}
+.verdict .big{font-family:Oswald;font-size:30px;color:var(--yellow);line-height:1}
+.verdict.no .big{color:#fff}
+.verdict p{margin:6px 0 0;font-size:13px;color:#e8eee6}
+.note{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:8px}
+.sim{display:inline-block;font-size:10px;background:#efe6c8;color:#7a6320;border-radius:6px;padding:2px 6px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.slider{margin:10px 0}
+.slider label{display:flex;justify-content:space-between;font-size:12.5px}
+.slider label b{font-weight:600}
+input[type=range]{width:100%;accent-color:var(--green)}
+.bars .b{margin:7px 0;font-size:12px}
+.bars .t{display:flex;justify-content:space-between}
+.bars .track{height:9px;background:#ece6d4;border-radius:6px;overflow:hidden;margin-top:3px}
+.bars .fill{height:100%;background:var(--green)}
+.btn{background:var(--green);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:600;font-size:13px}
+.btn.y{background:var(--yellow);color:var(--green)}
+.btn.ghost{background:transparent;color:var(--green);border:1px solid var(--green)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.empty{text-align:center;padding:28px 18px;color:var(--muted);font-size:14px}
+.empty .big{font-size:40px}
+/* tools on map */
+#tools{position:absolute;left:12px;top:12px;z-index:5;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px;width:290px;box-shadow:0 6px 24px #0002}
+#tools .seg{background:#efe9d8;border-color:var(--line)}
+#tools .seg button{color:var(--ink)}
+#tools .seg button.on{background:var(--green);color:#fff}
+#hint{font-size:12px;color:var(--muted);margin:8px 0 6px;line-height:1.4}
+#corrList{max-height:180px;overflow:auto;margin-top:6px}
+.citem{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 6px;border-radius:8px;cursor:pointer}
+.citem:hover,.citem.on{background:#f0ead8}
+.citem .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.citem .x{margin-left:auto;border:0;background:transparent;color:var(--muted);font-size:15px}
+.tag{font-size:10px;border-radius:5px;padding:1px 5px;background:#e3efe4;color:var(--ok);font-weight:600}
+.tag.plan{background:#e7eef8;color:var(--blue)}
+#legend{position:absolute;left:12px;bottom:28px;z-index:5;background:#fffdf7ee;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:11.5px}
+#legend .li{display:flex;align-items:center;gap:6px;margin:2px 0}
+#legend i{display:inline-block;width:12px;height:12px;border-radius:50%}
+#toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--green);color:#fff;padding:9px 14px;border-radius:10px;font-size:13px;z-index:9;display:none;max-width:80%}
+#busy{position:absolute;right:14px;top:14px;background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;z-index:6;display:none}
+/* modal */
+#modal{position:fixed;inset:0;background:#0007;z-index:60;display:none;align-items:center;justify-content:center}
+#modal .box{background:var(--paper);border-radius:16px;max-width:620px;width:92%;max-height:86vh;overflow:auto;padding:20px}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
+.slots button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 0;font-size:12.5px}
+.slots button.on{background:var(--green);color:#fff;border-color:var(--green)}
+.slots button:disabled{opacity:.35;text-decoration:line-through}
+table.asm{width:100%;border-collapse:collapse;font-size:12.5px}
+table.asm td{padding:6px 4px;border-bottom:1px dashed var(--line);vertical-align:top}
+table.asm input{width:110px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;font:inherit}
+.maplibregl-popup-content{border-radius:12px;padding:12px 14px;font-family:Poppins;font-size:12.5px;min-width:210px}
+svg text{font-family:Poppins}
+@media (max-width:900px){
+  main{grid-template-columns:1fr;grid-template-rows:55vh 1fr}
+  #panel{border-left:0;border-top:1px solid var(--line)}
+  #tools{width:auto;right:12px}
+  #legend{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ INTRO / ACTOR PICKER ============ -->
+<section id="intro">
+  <div class="border-deco"></div>
+  <div class="wrap">
+    <div class="logo">G³</div>
+    <h1 class="title">Dig once, charge everywhere<span>Who are you?</span></h1>
+    <p class="lead">Our 3 km pilot proved that one shared trench for the 5th-generation heat network and curbside EV chargers pays off. This map puts the pilot on real Guro streets: pick a street, set its length, and see the numbers that matter to <b>you</b>.</p>
+    <div class="who osw">Choose your role</div>
+    <div class="actors" id="actorGrid"></div>
+  </div>
+  <div class="foot">Guro Goes Green · KTH MJ2511 · Group 6 · Model: Financial Business Model.xlsx (2026 prices) · Map © OpenStreetMap contributors, OpenFreeMap</div>
+  <div class="border-deco"></div>
+</section>
+
+<!-- ============ APP ============ -->
+<div id="app" hidden>
+  <header>
+    <div class="logo">G³</div>
+    <div class="brand"><b>GURO GOES GREEN</b><small>DIG ONCE · BUSINESS MAP</small></div>
+    <button class="chip" id="actorChip" title="Change role">Role: <b id="actorName"></b> ▾</button>
+    <div class="spacer"></div>
+    <div class="seg" id="scenSeg" title="Charger demand">
+      <button data-v="dtd" class="on">Dare to Dream demand</button>
+      <button data-v="today">Today's Seoul use</button>
+    </div>
+    <div class="seg" id="curSeg"><button data-v="USD" class="on">USD</button><button data-v="KRW">KRW</button></div>
+    <button class="chip" id="asmBtn">Assumptions</button>
+  </header>
+  <main>
+    <div id="map">
+      <div id="tools">
+        <div class="seg" id="modeSeg" style="display:flex">
+          <button data-v="select" class="on" style="flex:1">Pick street</button>
+          <button data-v="draw" style="flex:1">Draw</button>
+          <button data-v="me" style="flex:1" id="meBtn">My location</button>
+        </div>
+        <div class="slider" id="lenBox">
+          <label><span>Length of each new street piece</span><b id="lenVal">1.0 km</b></label>
+          <input type="range" id="lenRange" min="200" max="5000" step="100" value="1000">
+        </div>
+        <div id="hint"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn ghost" id="pilotBtn" style="padding:6px 10px;font-size:12px">+ 3 km pilot</button>
+          <button class="btn ghost" id="finishBtn" style="padding:6px 10px;font-size:12px;display:none">Finish drawing</button>
+          <button class="btn ghost" id="clearBtn" style="padding:6px 10px;font-size:12px">Clear all</button>
+        </div>
+        <div id="corrList"></div>
+      </div>
+      <div id="legend"></div>
+      <div id="toast"></div>
+      <div id="busy">Reading the street…</div>
+    </div>
+    <aside id="panel"></aside>
+  </main>
+</div>
+
+<div id="modal"><div class="box" id="modalBox"></div></div>
+
+<script>
+// G³ financial business model — JS port of "Financial Business Model.xlsx"
+// Every input below mirrors a cell in the Inputs sheet (row in comments).
+const DEFAULTS = {
+  pop: 383829,            // B5  Guro registered population
+  area: 20.14,            // B6  km²
+  aptShare: 0.569246609214505, // B7
+  homeChgApt: 0.718,      // B8
+  homeChgOther: 0.453,    // B9
+  exclInter: 0.12,        // B13 (replaced by measured intersections when available)
+  exclOther: 0.18,        // B14..B17 bus stops 4% + crosswalks 3% + driveways 6% + trees 5%
+  bay: 6,                 // B18 m
+  acKW: 7, dcKW: 100,     // B22, B24
+  cfAC: 0.25, cfDC: 0.5,  // B25, B26
+  dcPerHub: 5,            // B28: 10 DC in 2 hubs
+  fx: 1340,               // B31 KRW/USD
+  acCost: 4e6, dcCost: 60e6,         // B32, B33 KRW
+  kepcoLV: 531000, kepcoLVkW: 128000, kepcoDC: 16e6, // B34..B36
+  trenchM: 400000,        // B37 KRW/m separate EV trench
+  cableShare: 0.2,        // B39
+  contrib: 0.5,           // B40 operator contribution to civil works
+  days: 365,
+  acSess: 1.2, acMin: 251.5, acChg: 0.5,   // B43..B45 Seoul 2024
+  dcSess: 2.3, dcMin: 47.2, dcPow: 0.6,    // B46..B48
+  priceAC: 295, priceDC: 348.4,            // B49, B50 KRW/kWh
+  elecAC: 130, elecDC: 150,                // B51, B52
+  capLV: 2390, capHV: 2580,                // B53, B54 KRW/kW·month
+  om: 0.08,               // B55
+  rate: 0.06, year0: 2035, years: 15,      // B57..B59
+  pplPerCar: 2.94,        // B61
+  catchM: 200,            // B63
+  evShare: 0.85,          // B64
+  kmDay: 37.8, kmPerKWh: 5.1,              // B65, B66
+  capture: 0.5, dcShare: 0.3,              // B67, B68
+  maxUtilAC: 0.4, maxUtilDC: 0.25,         // B69, B70
+  subsidy: 0,             // share of charger equipment paid by the State (not in Excel base case)
+  // Pilot design loads (Excel: 150 AC and 10 DC for the 3 km corridor) -> used to size chargers anywhere
+  designAC: null, designDC: null,
+  // PM2.5 model (Guro PM2.5 Model.xlsx)
+  pmBg: 11.5, pmLocal: 11.5, wPM: 0.4, wNOx: 0.6,
+  pmPrimaryBase: 178.9714, noxBase: 2804.0213,   // t/yr, KPI_PM25
+  icePM_g: 468.4, iceNOx_g: 9432,                // g per average ICE car per year (Baseline_Activity × Emission_Factors, 60/40 petrol/diesel)
+  dhPipeM: 0              // 5GDHC pipes per metre (not in the model yet)
+};
+
+function inputsWithDesign(p) {
+  const q = Object.assign({}, DEFAULTS, p || {});
+  if (q.designAC == null || q.designDC == null) {
+    // demand per charger in the original pilot with the ORIGINAL inputs (45.3 / 291.2 kWh/day)
+    const d = Object.assign({}, DEFAULTS);
+    const dem = demand(d, 3000, 1);
+    q.designAC = dem.acDem / 150;
+    q.designDC = dem.dcDem / 10;
+  }
+  return q;
+}
+
+function publicShare(q) {
+  return q.aptShare * (1 - q.homeChgApt) + (1 - q.aptShare) * (1 - q.homeChgOther);
+}
+
+function demand(q, L, density) {
+  const cars = q.pop / q.pplPerCar;
+  const catchKm2 = L * 2 * q.catchM / 1e6;
+  const carsC = cars * (catchKm2 / q.area) * density;
+  const evs = carsC * q.evShare;
+  const evsPublic = evs * publicShare(q);
+  const kwhEV = q.kmDay / q.kmPerKWh;
+  const pub = evsPublic * kwhEV;
+  const served = pub * q.capture;
+  return { cars, catchKm2, carsC, evs, evsPublic, kwhEV, pub, served,
+           acDem: served * (1 - q.dcShare), dcDem: served * q.dcShare };
+}
+
+// One corridor piece: L metres, nInt measured intersections (null = Excel default share), density factor
+function piece(q, seg) {
+  const L = seg.L, density = seg.density || 1;
+  const exclInter = seg.interM == null ? q.exclInter : Math.min(0.45, seg.interM / L);
+  const excl = Math.min(0.9, exclInter + q.exclOther);
+  const usable = L * (1 - excl);
+  const positions = Math.floor(usable / (2 * q.bay));
+  const dem = demand(q, L, density);
+  let dc = Math.round(dem.dcDem / q.designDC);
+  let hubs = dc > 0 ? Math.ceil(dc / q.dcPerHub) : 0;
+  if (dc + hubs > positions) { dc = Math.max(0, Math.floor(positions * q.dcPerHub / (q.dcPerHub + 1))); hubs = dc > 0 ? Math.ceil(dc / q.dcPerHub) : 0; }
+  const acNeed = Math.round(dem.acDem / q.designAC);
+  const acRoom = Math.max(0, positions - dc - hubs);
+  const ac = Math.min(acNeed, acRoom);
+  return { L, nInt: seg.nInt, interM: seg.interM, density, excl, exclInter, usable, positions, dc, hubs, ac, acNeed, acRoom, curbLimited: acNeed > acRoom, dem };
+}
+
+function evaluate(segs, p) {
+  const q = inputsWithDesign(p);
+  const ps = segs.map(s => piece(q, s));
+  const sum = k => ps.reduce((a, x) => a + x[k], 0);
+  const L = sum('L'), ac = sum('ac'), dc = sum('dc'), hubs = sum('hubs'), positions = sum('positions');
+  const acDem = ps.reduce((a, x) => a + x.dem.acDem, 0), dcDem = ps.reduce((a, x) => a + x.dem.dcDem, 0);
+  const evsPublic = ps.reduce((a, x) => a + x.dem.evsPublic, 0);
+  const catchKm2 = ps.reduce((a, x) => a + x.dem.catchKm2, 0);
+
+  // Corridor
+  const instAC = ac * q.acKW / 1000, instDC = dc * q.dcKW / 1000;
+  const peakAC = instAC * q.cfAC, peakDC = instDC * q.cfDC;
+
+  // Revenue — Dare to Dream demand
+  const maxAC = q.acKW * 24 * q.maxUtilAC, maxDC = q.dcKW * 24 * q.maxUtilDC;
+  const eAC = ac ? Math.min(acDem / ac, maxAC) : 0;
+  const eDC = dc ? Math.min(dcDem / dc, maxDC) : 0;
+  const mwhAC = eAC * ac * q.days / 1000, mwhDC = eDC * dc * q.days / 1000;
+  const revAC = mwhAC * 1000 * q.priceAC, revDC = mwhDC * 1000 * q.priceDC;
+  const unserved = Math.max(0, acDem - eAC * ac) + Math.max(0, dcDem - eDC * dc); // kWh/day
+  // Today's Seoul use
+  const tAC = q.acSess * q.acMin / 60 * q.acKW * q.acChg;
+  const tDC = q.dcSess * q.dcMin / 60 * q.dcKW * q.dcPow;
+  const tMwhAC = tAC * ac * q.days / 1000, tMwhDC = tDC * dc * q.days / 1000;
+
+  // CAPEX
+  const equip = ac * q.acCost + dc * q.dcCost;
+  const grid = ac * (q.kepcoLV + Math.max(0, q.acKW - 5) * q.kepcoLVkW) + dc * q.kepcoDC;
+  const trenchSep = L * q.trenchM;
+  const cables = trenchSep * q.cableShare;
+  const civil = trenchSep - cables;
+  const contribution = civil * q.contrib;
+  const trenchDig = cables + contribution;
+  const subsidyKRW = equip * q.subsidy;
+  const capexSep = equip + grid + trenchSep - subsidyKRW;
+  const capexDig = equip + grid + trenchDig - subsidyKRW;
+
+  // OPEX
+  function opex(mAC, mDC) {
+    const elec = mAC * 1000 * q.elecAC + mDC * 1000 * q.elecDC;
+    const cap = peakAC * 1000 * q.capLV * 12 + peakDC * 1000 * q.capHV * 12;
+    const om = equip * q.om;
+    return { elec, cap, om, total: elec + cap + om };
+  }
+  const ox = opex(mwhAC, mwhDC), oxT = opex(tMwhAC, tMwhDC);
+  const rev = revAC + revDC;
+  const tRev = tMwhAC * 1000 * q.priceAC + tMwhDC * 1000 * q.priceDC;
+  const net = rev - ox.total, tNet = tRev - oxT.total;
+  const ann = (1 - Math.pow(1 + q.rate, -q.years)) / q.rate;
+  const npv = (I, n) => -I + n * ann;
+  const irr = (I, n) => {
+    if (n <= 0) return null;
+    let lo = -0.99, hi = 2;
+    const f = r => -I + n * (Math.abs(r) < 1e-9 ? q.years : (1 - Math.pow(1 + r, -q.years)) / r);
+    if (f(hi) > 0) return hi;
+    for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; f(m) > 0 ? lo = m : hi = m; }
+    return (lo + hi) / 2;
+  };
+  const mwh = mwhAC + mwhDC;
+  const eKm = mwh * 1000 * q.kmPerKWh;
+
+  // PM2.5 (Guro PM2.5 model logic: local PM = 11.5 × LEI)
+  const carsDisplaced = mwh * 1000 / (q.kwhEV_override || (q.kmDay / q.kmPerKWh * 365));
+  const pmT = carsDisplaced * q.icePM_g / 1e6, noxT = carsDisplaced * q.iceNOx_g / 1e6;
+  const dLEI = q.wPM * pmT / q.pmPrimaryBase + q.wNOx * noxT / q.noxBase;
+  const dDistrict = q.pmLocal * dLEI;
+  const dCatch = catchKm2 > 0 ? Math.min(q.pmLocal * 0.5, dDistrict * q.area / catchKm2) : 0;
+
+  const R = {
+    q, ps, L, ac, dc, hubs, positions, instAC, instDC, peakAC, peakDC, evsPublic, catchKm2,
+    eAC, eDC, utilAC: eAC / (q.acKW * 24), utilDC: eDC / (q.dcKW * 24),
+    mwhAC, mwhDC, mwh, revAC, revDC, rev, unserved, eKm,
+    tAC, tDC, tMwh: tMwhAC + tMwhDC, tRev,
+    equip, grid, trenchSep, cables, civil, contribution, trenchDig, subsidyKRW, capexSep, capexDig,
+    ox, oxT, net, tNet,
+    npvDig: npv(capexDig, net), npvSep: npv(capexSep, net),
+    irrDig: irr(capexDig, net), irrSep: irr(capexSep, net),
+    npvDigToday: npv(capexDig, tNet), npvSepToday: npv(capexSep, tNet),
+    irrDigToday: irr(capexDig, tNet), irrSepToday: irr(capexSep, tNet),
+    payDigToday: tNet > 0 ? capexDig / tNet : null, paySepToday: tNet > 0 ? capexSep / tNet : null,
+    payDig: net > 0 ? capexDig / net : null, paySep: net > 0 ? capexSep / net : null,
+    ann,
+    // subsidy (KRW, one-off) the State would need to give so the operator breaks even (NPV = 0)
+    gapDtD: Math.max(0, -npv(capexDig, net)), gapToday: Math.max(0, -npv(capexDig, tNet)),
+    kepcoEnergy: ox.elec, kepcoCap: ox.cap, kepcoConn: grid,
+    pmT, noxT, dDistrict, dCatch, carsDisplaced
+  };
+  return R;
+}
+
+if (typeof module !== 'undefined') module.exports = { evaluate, DEFAULTS };
+
+</script>
+<script>
+// ===================================================================
+//  Actors
+// ===================================================================
+const ACTORS = {
+  operator:{ic:'⚡',name:'Private operator',short:'Operator',color:'#1f3a2b',
+    p:'You invest in the chargers, the grid connection and your share of the trench.',
+    wants:'Is this street worth building? NPV · IRR · payback'},
+  heat:{ic:'♨️',name:'Heat utility (5GDHC)',short:'Heat utility',color:'#d9772b',
+    p:'You open the street for the heat network anyway. The operator pays you to share the trench.',
+    wants:'Civil-works cost · contribution received'},
+  kepco:{ic:'🔌',name:'KEPCO (grid)',short:'KEPCO',color:'#3b6ea8',
+    p:'You connect the chargers, sell the electricity and keep the grid stable.',
+    wants:'Peak load · sales · charger health'},
+  users:{ic:'🚗',name:'Residents & fleets',short:'Users',color:'#7a5bb0',
+    p:'You need a charger near home or on your route.',
+    wants:'Where · price · free now? · book'},
+  public:{ic:'🏛️',name:'State (MCEE) + Guro-gu',short:'State + Guro-gu',color:'#b8462f',
+    p:'You coordinate street works and decide whether to subsidise.',
+    wants:'Total cost · subsidy needed · PM2.5 before/after'}
+};
+
+// ===================================================================
+//  State
+// ===================================================================
+let P = Object.assign({}, DEFAULTS);
+const S = { actor:null, scen:'dtd', cur:'USD', mode:'select', pieceLen:1000, corridors:[], focus:null,
+            draft:[], me:null, bookings:[], nextId:1, heatPipe:0 };
+const GURO = [126.8875, 37.4954];
+// Built-up floor area per km² averaged over Guro-gu (calibrated on the OpenFreeMap building layer) -> density factor = 1
+const REF_GFA_KM2 = 1.061e6; // measured: 20.2 M m² of floor area over a 19 km² box around Guro-gu (OpenFreeMap, z14)
+// The Excel pilot corridor placed on a real street (Digital-ro, G-Valley), ~3 km
+const PILOT = [[126.882876, 37.476418], [126.888056, 37.477902], [126.889805, 37.479341], [126.891403, 37.480622], [126.892412, 37.481431], [126.89349, 37.482321], [126.894418, 37.483368], [126.895131, 37.484249], [126.8954, 37.48456], [126.89557, 37.48479], [126.896312, 37.48579], [126.89717, 37.486897], [126.897535, 37.48731], [126.897878, 37.487578], [126.898034, 37.48771], [126.898479, 37.488131], [126.899198, 37.488778], [126.903757, 37.492839], [126.904787, 37.493762], [126.905576, 37.494477], [126.906656, 37.495432]];
+
+// ===================================================================
+//  Geometry helpers (local metres around Guro)
+// ===================================================================
+const KX = 111320*Math.cos(37.49*Math.PI/180), KY = 110540;
+const toM = c => [c[0]*KX, c[1]*KY];
+const toLL = m => [m[0]/KX, m[1]/KY];
+const d2 = (a,b) => Math.hypot(a[0]-b[0], a[1]-b[1]);
+function plen(pts){let s=0;for(let i=1;i<pts.length;i++)s+=d2(pts[i-1],pts[i]);return s}
+function nearestOn(pts, p){ // pts in metres
+  let best={dist:Infinity,along:0,i:0,pt:pts[0]}, acc=0;
+  for(let i=1;i<pts.length;i++){
+    const a=pts[i-1],b=pts[i],dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;
+    let t=L2?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L2:0; t=Math.max(0,Math.min(1,t));
+    const q=[a[0]+t*dx,a[1]+t*dy], d=d2(p,q), sl=Math.sqrt(L2);
+    if(d<best.dist) best={dist:d,along:acc+t*sl,i,pt:q};
+    acc+=sl;
+  }
+  return best;
+}
+function slice(pts, s0, s1){ // along distances in metres, s0<s1
+  const out=[]; let acc=0;
+  for(let i=1;i<pts.length;i++){
+    const a=pts[i-1],b=pts[i],sl=d2(a,b);
+    const segA=acc, segB=acc+sl;
+    const lerp=s=>{const t=sl?(s-segA)/sl:0;return [a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])]};
+    if(segB>=s0 && segA<=s1){
+      if(!out.length) out.push(lerp(Math.max(s0,segA)));
+      out.push(lerp(Math.min(s1,segB)));
+    }
+    acc=segB; if(acc>s1) break;
+  }
+  return out;
+}
+function pointAt(pts, s){ let acc=0;
+  for(let i=1;i<pts.length;i++){const sl=d2(pts[i-1],pts[i]); if(acc+sl>=s){const t=sl?(s-acc)/sl:0;return [pts[i-1][0]+t*(pts[i][0]-pts[i-1][0]),pts[i-1][1]+t*(pts[i][1]-pts[i-1][1])]} acc+=sl;}
+  return pts[pts.length-1]; }
+function segX(p1,p2,p3,p4){const d=(p2[0]-p1[0])*(p4[1]-p3[1])-(p2[1]-p1[1])*(p4[0]-p3[0]); if(Math.abs(d)<1e-9)return null;
+  const t=((p3[0]-p1[0])*(p4[1]-p3[1])-(p3[1]-p1[1])*(p4[0]-p3[0]))/d, u=((p3[0]-p1[0])*(p2[1]-p1[1])-(p3[1]-p1[1])*(p2[0]-p1[0]))/d;
+  return (t>=0&&t<=1&&u>=0&&u<=1)?{p:[p1[0]+t*(p2[0]-p1[0]),p1[1]+t*(p2[1]-p1[1])],ang:Math.abs(Math.atan2(p2[1]-p1[1],p2[0]-p1[0])-Math.atan2(p4[1]-p3[1],p4[0]-p3[0]))}:null}
+const ang=(a,b)=>Math.atan2(b[1]-a[1],b[0]-a[0]); const adiff=(x,y)=>{let d=Math.abs(x-y)%(2*Math.PI);return d>Math.PI?2*Math.PI-d:d};
+function lines(geom){ if(!geom) return []; if(geom.type==='LineString') return [geom.coordinates]; if(geom.type==='MultiLineString') return geom.coordinates; return []; }
+function rings(geom){ if(geom.type==='Polygon') return [geom.coordinates[0]]; if(geom.type==='MultiPolygon') return geom.coordinates.map(p=>p[0]); return []; }
+function areaM(ring){const m=ring.map(toM);let s=0;for(let i=1;i<m.length;i++)s+=m[i-1][0]*m[i][1]-m[i][0]*m[i-1][1];return Math.abs(s)/2}
+function rnd(seed){let h=2166136261;for(const ch of String(seed)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return ((h>>>0)%100000)/100000}
+
+// ===================================================================
+//  Formatting
+// ===================================================================
+function money(krw, opt={}){
+  if(krw==null||isNaN(krw)) return '–';
+  const neg=krw<0, a=Math.abs(krw);
+  let s;
+  if(S.cur==='USD'){ const u=a/P.fx;
+    s = u>=1e6? '$'+(u/1e6).toFixed(u>=1e7?1:2)+' M' : u>=1e4? '$'+Math.round(u/1e3)+'k' : '$'+Math.round(u).toLocaleString('en-US'); }
+  else { s = a>=1e9? '₩'+(a/1e9).toFixed(2)+' bn' : a>=1e6? '₩'+(a/1e6).toFixed(a>=1e8?0:1)+' M' : '₩'+Math.round(a).toLocaleString('en-US'); }
+  return (neg?'−':'')+s;
+}
+const pct = (x,d=0) => x==null?'–':(x*100).toFixed(d)+'%';
+const num = (x,d=0) => x==null?'–':Number(x).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+const km = m => (m/1000).toFixed(m<10000?2:1)+' km';
+function priceKWh(krw){ return S.cur==='USD' ? '$'+(krw/P.fx).toFixed(3)+'/kWh' : '₩'+num(krw,1)+'/kWh'; }
+
+// ===================================================================
+//  Model glue
+// ===================================================================
+function segOf(c){ return {L:c.L, nInt:c.nInt, interM:c.interM, density:c.density}; }
+function evalAll(list, extra){ return list.length? evaluate(list.map(segOf), Object.assign({},P,extra||{})) : null; }
+function fin(R){ // pick scenario
+  const t=S.scen==='today';
+  return { net:t?R.tNet:R.net, rev:t?R.tRev:R.rev, opex:t?R.oxT:R.ox, mwh:t?R.tMwh:R.mwh,
+    npv:t?R.npvDigToday:R.npvDig, npvSep:t?R.npvSepToday:R.npvSep, irr:t?R.irrDigToday:R.irrDig, irrSep:t?R.irrSepToday:R.irrSep,
+    pay:t?R.payDigToday:R.payDig, paySep:t?R.paySepToday:R.paySep };
+}
+function scopeList(){ const f=S.corridors.find(c=>c.id===S.focus); return f?[f]:S.corridors; }
+
+// ===================================================================
+//  Intro
+// ===================================================================
+const grid=document.getElementById('actorGrid');
+for(const [k,a] of Object.entries(ACTORS)){
+  const b=document.createElement('button'); b.className='actor';
+  b.innerHTML=`<div class="ic">${a.ic}</div><h3>${a.name}</h3><p>${a.p}</p><div class="wants">${a.wants}</div>`;
+  b.onclick=()=>chooseActor(k); grid.appendChild(b);
+}
+function chooseActor(k){
+  S.actor=k; document.getElementById('intro').style.display='none';
+  document.getElementById('app').hidden=false;
+  document.getElementById('actorName').textContent=ACTORS[k].short;
+  if(!map) initMap(); else { map.resize(); refresh(); }
+  setMode(k==='users'?'me':'select');
+}
+document.getElementById('actorChip').onclick=()=>{document.getElementById('intro').style.display='flex'};
+
+// ===================================================================
+//  Map
+// ===================================================================
+let map;
+function initMap(){
+  map = new maplibregl.Map({container:'map', style:'https://tiles.openfreemap.org/styles/liberty',
+    center:GURO, zoom:14.6, pitch:55, bearing:-18, antialias:true, maxPitch:70});
+  map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
+  map.doubleClickZoom.disable();
+  map.on('load', ()=>{
+    // Guro-gu highlight label
+    map.addSource('corr',{type:'geojson',data:fc([])});
+    map.addSource('chg',{type:'geojson',data:fc([])});
+    map.addSource('draft',{type:'geojson',data:fc([])});
+    map.addSource('me',{type:'geojson',data:fc([])});
+    const mpp=z=>156543.03*Math.cos(37.49*Math.PI/180)/Math.pow(2,z);
+    const below = map.getLayer('building-3d') ? 'building-3d' : undefined; // streets under the 3D buildings
+    map.addLayer({id:'catch',type:'line',source:'corr',layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':['get','ccol'],'line-opacity':0.16,
+        'line-width':['interpolate',['exponential',2],['zoom'],10,2*P.catchM/mpp(10),20,2*P.catchM/mpp(20)]}}, below);
+    map.addLayer({id:'corr-case',type:'line',source:'corr',layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':'#fff','line-width':['interpolate',['linear'],['zoom'],12,6,17,16]}}, below);
+    map.addLayer({id:'corr-line',type:'line',source:'corr',filter:['==',['get','status'],'operating'],layout:{'line-cap':'round','line-join':'round'},
+      paint:{'line-color':['get','col'],'line-width':['interpolate',['linear'],['zoom'],12,4,17,11]}}, below);
+    map.addLayer({id:'corr-plan',type:'line',source:'corr',filter:['==',['get','status'],'planned'],layout:{'line-join':'round'},
+      paint:{'line-color':['get','col'],'line-width':['interpolate',['linear'],['zoom'],12,4,17,11],'line-dasharray':[1.6,0.9]}}, below);
+    map.addLayer({id:'draft-line',type:'line',source:'draft',paint:{'line-color':'#c2a24e','line-width':4,'line-dasharray':[1,1]}});
+    map.addLayer({id:'draft-pt',type:'circle',source:'draft',filter:['==','$type','Point'],paint:{'circle-radius':5,'circle-color':'#c2a24e','circle-stroke-color':'#fff','circle-stroke-width':2}});
+    map.addLayer({id:'chg-pt',type:'circle',source:'chg',minzoom:13,
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],13,['case',['==',['get','type'],'DC'],4,2],18,['case',['==',['get','type'],'DC'],11,6]],
+        'circle-color':['get','col'],'circle-stroke-color':'#fff','circle-stroke-width':['case',['==',['get','type'],'DC'],2,1]}});
+    map.addLayer({id:'me-pt',type:'circle',source:'me',paint:{'circle-radius':8,'circle-color':'#7a5bb0','circle-stroke-color':'#fff','circle-stroke-width':3}});
+    map.addLayer({id:'me-line',type:'line',source:'me',paint:{'line-color':'#7a5bb0','line-width':2,'line-dasharray':[2,1]}});
+    if(PILOT) addCorridor({name:'Pilot · Digital-ro, G-Valley',coords:PILOT,status:'operating',pilot:true}, true);
+    refresh();
+  });
+  map.on('click', onMapClick);
+  map.on('dblclick', e=>{ if(S.mode==='draw'){ e.preventDefault(); finishDraw(); }});
+  map.on('mouseenter','chg-pt',()=>map.getCanvas().style.cursor='pointer');
+  map.on('mouseleave','chg-pt',()=>map.getCanvas().style.cursor='');
+  for(const l of ['corr-line','corr-plan']){ map.on('mouseenter',l,()=>map.getCanvas().style.cursor='pointer'); map.on('mouseleave',l,()=>map.getCanvas().style.cursor=''); }
+}
+const fc = f => ({type:'FeatureCollection',features:f});
+
+function toast(msg,ms=3200){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',ms)}
+
+// ---------- modes ----------
+function setMode(m){
+  S.mode=m; document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===m));
+  document.getElementById('finishBtn').style.display=m==='draw'?'':'none';
+  document.getElementById('lenBox').style.display=m==='select'?'':'none';
+  const H={select:'Click any street: a piece of the chosen length, centred where you click, becomes a corridor. Click a coloured corridor to focus on it.',
+           draw:'Click along the street to trace your own corridor. Double-click or "Finish drawing" to close it.',
+           me:'Click where you live or park: we show the nearest chargers and how far they are.'};
+  document.getElementById('hint').textContent=H[m];
+  if(m!=='draw'){S.draft=[];drawDraft()}
+}
+document.querySelectorAll('#modeSeg button').forEach(b=>b.onclick=()=>setMode(b.dataset.v));
+document.getElementById('lenRange').oninput=e=>{S.pieceLen=+e.target.value;document.getElementById('lenVal').textContent=(S.pieceLen/1000).toFixed(1)+' km'};
+document.getElementById('finishBtn').onclick=()=>finishDraw();
+document.getElementById('clearBtn').onclick=()=>{S.corridors=[];S.focus=null;refresh()};
+document.getElementById('pilotBtn').onclick=()=>{ if(!PILOT) return toast('Pilot not available');
+  if(S.corridors.some(c=>c.pilot)) { focusOn(S.corridors.find(c=>c.pilot).id); return; }
+  addCorridor({name:'Pilot · Digital-ro, G-Valley',coords:PILOT,status:'operating',pilot:true}); };
+document.querySelectorAll('#scenSeg button').forEach(b=>b.onclick=()=>{S.scen=b.dataset.v;document.querySelectorAll('#scenSeg button').forEach(x=>x.classList.toggle('on',x===b));refresh()});
+document.querySelectorAll('#curSeg button').forEach(b=>b.onclick=()=>{S.cur=b.dataset.v;document.querySelectorAll('#curSeg button').forEach(x=>x.classList.toggle('on',x===b));refresh()});
+
+// ---------- click ----------
+function onMapClick(e){
+  const ch=map.queryRenderedFeatures(e.point,{layers:['chg-pt']});
+  if(ch.length){ return chargerClick(ch[0].properties, e.lngLat); }
+  if(S.mode==='me'){ S.me=[e.lngLat.lng,e.lngLat.lat]; refresh(); return; }
+  if(S.mode==='draw'){ S.draft.push([e.lngLat.lng,e.lngLat.lat]); drawDraft(); return; }
+  const cl=map.queryRenderedFeatures([[e.point.x-6,e.point.y-6],[e.point.x+6,e.point.y+6]],{layers:['corr-line','corr-plan']});
+  if(cl.length){ focusOn(cl[0].properties.id); return; }
+  pickStreet(e.lngLat);
+}
+function drawDraft(){ if(!map||!map.getSource('draft'))return;
+  const f=S.draft.map(c=>({type:'Feature',geometry:{type:'Point',coordinates:c}}));
+  if(S.draft.length>1) f.push({type:'Feature',geometry:{type:'LineString',coordinates:S.draft}});
+  map.getSource('draft').setData(fc(f)); }
+function finishDraw(){ if(S.draft.length<2) return toast('Click at least two points along the street');
+  const coords=S.draft.slice(); S.draft=[]; drawDraft();
+  addCorridor({name:'Drawn corridor',coords,status:'planned'}); }
+
+// ---------- pick a street ----------
+function pickStreet(ll){
+  if(map.getZoom()<14.2){ toast('Zooming in to read the street…'); map.easeTo({center:ll,zoom:15.4,duration:900}); map.once('idle',()=>pickStreet(ll)); return; }
+  const p=map.project(ll);
+  const near=map.queryRenderedFeatures([[p.x-10,p.y-10],[p.x+10,p.y+10]]).filter(f=>f.sourceLayer==='transportation'&&/Line/.test(f.geometry.type));
+  if(!near.length) return toast('No street here: click on a road');
+  const cm=toM([ll.lng,ll.lat]);
+  // nearest road feature
+  let best=null; for(const f of near){ for(const ln of lines(f.geometry)){ const r=nearestOn(ln.map(toM),cm); if(!best||r.dist<best.dist) best={dist:r.dist,f}; } }
+  const cls=best.f.properties.class;
+  if(['motorway','trunk'].includes(cls)) return toast('Expressways have no curb parking: pick an urban street');
+  if(['path','track','rail','transit','ferry','aerialway'].includes(cls)) return toast('Pick a street with curb parking');
+  // name of the street
+  const names=map.querySourceFeatures('openmaptiles',{sourceLayer:'transportation_name'});
+  let nm=null, nd=Infinity; for(const f of names){ for(const ln of lines(f.geometry)){ const r=nearestOn(ln.map(toM),cm); if(r.dist<nd){nd=r.dist;nm=f;} } }
+  let cand, label;
+  if(nm && nd<35){ const key=nm.properties.name; label=nm.properties['name:en']||nm.properties['name:latin']||key;
+    cand=[]; for(const f of names) if(f.properties.name===key) for(const ln of lines(f.geometry)) cand.push(ln.map(toM)); }
+  else { label='Unnamed street'; cand=[]; for(const f of map.querySourceFeatures('openmaptiles',{sourceLayer:'transportation'})) if(f.properties.class===cls) for(const ln of lines(f.geometry)) cand.push(ln.map(toM)); }
+  const path=buildPath(cm, cand, S.pieceLen);
+  if(!path || plen(path)<100) return toast('Could not follow this street: try Draw');
+  const got=plen(path);
+  if(got < S.pieceLen*0.8) toast(`This street only gives ${km(got)} here (it ends or leaves the loaded map)`);
+  addCorridor({name:label,coords:path.map(toLL),status:'planned',cls});
+}
+function buildPath(cm, cand, Lm){
+  let st=null; cand.forEach((pts,i)=>{const r=nearestOn(pts,cm); if(!st||r.dist<st.dist) st={...r,idx:i};});
+  if(!st||st.dist>60) return null;
+  const fwd=walk(cand,st.idx,st.along,+1,Lm/2), back=walk(cand,st.idx,st.along,-1,Lm/2);
+  // if one side ended early, give the rest to the other side
+  const lf=plen(fwd), lb=plen(back);
+  let f2=fwd,b2=back;
+  if(lf<Lm/2-20 && lb>=Lm/2-20) b2=walk(cand,st.idx,st.along,-1,Lm-lf);
+  else if(lb<Lm/2-20 && lf>=Lm/2-20) f2=walk(cand,st.idx,st.along,+1,Lm-lb);
+  return b2.slice().reverse().concat(f2.slice(1));
+}
+function walk(cand, idx, along, dir, rem){
+  const out=[]; const used=new Set([idx]); let pts=cand[idx], s=along;
+  for(let hop=0;hop<12 && rem>2;hop++){
+    const L=plen(pts); let seg;
+    if(dir>0){ const e=Math.min(L,s+rem); seg=slice(pts,s,e); rem-=e-s; }
+    else { const b=Math.max(0,s-rem); seg=slice(pts,b,s).reverse(); rem-=s-b; }
+    for(const p of seg){ if(!out.length||d2(out[out.length-1],p)>0.5) out.push(p); }
+    if(rem<=2) break;
+    if(out.length<2) break;
+    // hop to the next piece of the same street that continues in the same direction (avoids jumping onto the opposite carriageway)
+    const end=out[out.length-1]; let k=out.length-2; while(k>0&&d2(out[k],end)<20) k--; const head=ang(out[k],end);
+    let nb=null; cand.forEach((q,j)=>{ if(used.has(j))return; const r=nearestOn(q,end); if(r.dist>40) return; const Lq=plen(q);
+      for(const dr of [1,-1]){ const s2=dr>0?Math.min(Lq,r.along+20):Math.max(0,r.along-20); if(Math.abs(s2-r.along)<3) continue;
+        const dd=adiff(ang(r.pt,pointAt(q,s2)),head); if(dd<Math.PI/3){ const sc=r.dist+dd*30; if(!nb||sc<nb.sc) nb={j,along:r.along,dir:dr,sc}; } } });
+    if(!nb) break;
+    used.add(nb.j); pts=cand[nb.j]; s=nb.along; dir=nb.dir;
+  }
+  return out;
+}
+
+// ---------- read local context: intersections + building density ----------
+function analyse(coords){
+  const pts=coords.map(toM); const L=plen(pts);
+  let nInt=null, interM=null, density=1, gfa=null;
+  const W={motorway:35,trunk:35,primary:35,secondary:35,tertiary:25,minor:15};
+  try{
+    const roads=map.querySourceFeatures('openmaptiles',{sourceLayer:'transportation'});
+    const hits=[];
+    for(const f of roads){ const w=W[f.properties.class]; if(!w) continue;
+      for(const ln of lines(f.geometry)){ const q=ln.map(toM);
+        for(let i=1;i<pts.length;i++) for(let j=1;j<q.length;j++){
+          const x=segX(pts[i-1],pts[i],q[j-1],q[j]); if(!x) continue;
+          let a=x.ang%Math.PI; if(a>Math.PI/2) a=Math.PI-a;
+          if(a>Math.PI/6 && !hits.some(h=>d2(h.p,x.p)<25)) hits.push({p:x.p,w});
+        } } }
+    if(roads.length){ nInt=hits.length; interM=hits.reduce((s,h)=>s+h.w,0); }
+    const bl=map.querySourceFeatures('openmaptiles',{sourceLayer:'building'});
+    if(bl.length){ let A=0; const seen=new Set();
+      for(const f of bl){ for(const r of rings(f.geometry)){ const c=toM(r[0]); const k=Math.round(c[0])+','+Math.round(c[1]); if(seen.has(k))continue; seen.add(k);
+        if(nearestOn(pts,c).dist<=P.catchM){ const h=+f.properties.render_height||6; A+=areaM(r)*Math.max(1,Math.round(h/3.2)); } } }
+      gfa=A; const catchKm2=L*2*P.catchM/1e6; density=Math.max(0.4,Math.min(2.5,(A/catchKm2)/REF_GFA_KM2)); }
+  }catch(err){ console.warn(err); }
+  return {L,nInt,interM,density,gfa};
+}
+
+function addCorridor(o, silent){
+  const a = o.pilot ? {L:3000,nInt:null,interM:null,density:1,gfa:null} : analyse(o.coords); // the pilot keeps the Excel assumptions (3 km, average curb and density)
+  const c={id:'c'+(S.nextId++),name:o.name,coords:o.coords,status:o.status,pilot:!!o.pilot,cls:o.cls,L:a.L,nInt:a.nInt,interM:a.interM,density:a.density,density0:a.density,gfa:a.gfa};
+  S.corridors.push(c); S.focus=c.id; refresh();
+  if(!silent) toast(`${c.name}: ${km(c.L)} added`);
+}
+function focusOn(id){ S.focus = S.focus===id? null : id; refresh(); }
+
+// ===================================================================
+//  Chargers on the map (positions + simulated live data)
+// ===================================================================
+function placeChargers(c, R){
+  const pts=c.coords.map(toM), L=plen(pts), out=[];
+  const r=R.ps[0]; const n=r.ac, ndc=r.dc, hubs=r.hubs;
+  for(let h=0;h<hubs;h++){ const s=L*(h+1)/(hubs+1); const per=Math.ceil(ndc/hubs); const k=Math.min(per, ndc-h*per);
+    for(let j=0;j<k;j++){ out.push({type:'DC',s:Math.min(L,s+j*8),hub:h+1}); } }
+  for(let i=0;i<n;i++) out.push({type:'AC',s:L*(i+0.5)/n});
+  return out.map((x,i)=>{ const id=`${c.id}-${x.type}${i}`; const u=rnd(id), u2=rnd(id+'h'), u3=rnd(id+'k');
+    const util = x.type==='AC'? (S.scen==='today'?R.tAC/(P.acKW*24):R.utilAC) : (S.scen==='today'?R.tDC/(P.dcKW*24):R.utilDC);
+    const e = x.type==='AC'? (S.scen==='today'?R.tAC:R.eAC) : (S.scen==='today'?R.tDC:R.eDC);
+    const health = u2<0.02?'offline':u2<0.08?'maintenance':'ok';
+    const busy = c.status==='operating' && health==='ok' && u < Math.min(0.9,util*1.6);
+    const kwh = health==='offline'?0: e*(0.55+0.9*u3);
+    return {id, cid:c.id, type:x.type, hub:x.hub, ll:toLL(pointAt(pts,x.s)), status:c.status, health, busy, kwh,
+            rev: kwh*(x.type==='AC'?P.priceAC:P.priceDC), num:i+1, street:c.name};
+  });
+}
+
+// ===================================================================
+//  Refresh everything
+// ===================================================================
+let CH=[]; // all chargers
+const PIECE = {};
+function refresh(){
+  if(!map||!map.getSource('corr')) { renderPanel(); return; }
+  CH=[]; const feats=[];
+  for(const c of S.corridors){
+    const R=evaluate([segOf(c)],P); PIECE[c.id]=R; const F=fin(R);
+    let col='#1f3a2b';
+    if(S.actor==='operator') col = F.npv>=0 ? '#3f7d4e' : '#b8462f';
+    else if(S.actor==='heat') col='#d9772b';
+    else if(S.actor==='kepco') col='#3b6ea8';
+    else if(S.actor==='users') col= c.status==='operating'?'#7a5bb0':'#9c8ac4';
+    else if(S.actor==='public') col= F.npv>=0 ? '#3f7d4e' : '#d9772b';
+    feats.push({type:'Feature',properties:{id:c.id,col,ccol:S.actor==='public'?'#3f7d4e':col,status:c.status},geometry:{type:'LineString',coordinates:c.coords}});
+    CH.push(...placeChargers(c,R));
+  }
+  map.getSource('corr').setData(fc(feats));
+  map.getSource('chg').setData(fc(CH.map(x=>({type:'Feature',properties:{...x,ll:undefined,col:chgColor(x)},geometry:{type:'Point',coordinates:x.ll}}))));
+  // my location
+  const meF=[]; if(S.me){ meF.push({type:'Feature',geometry:{type:'Point',coordinates:S.me}});
+    const n=nearest(S.me); if(n[0]) meF.push({type:'Feature',geometry:{type:'LineString',coordinates:[S.me,n[0].ll]}}); }
+  map.getSource('me').setData(fc(meF));
+  renderList(); renderLegend(); renderPanel();
+}
+function chgColor(x){
+  if(S.actor==='kepco') return x.status!=='operating'?'#9aa3a0': x.health==='offline'?'#b8462f':x.health==='maintenance'?'#e0a43a':'#3f7d4e';
+  if(S.actor==='users') return x.status!=='operating'?'#9c8ac4': x.health!=='ok'?'#9aa3a0': x.busy?'#e0a43a':'#3f7d4e';
+  return x.type==='DC'?'#f6d44a':'#ffffff';
+}
+function nearest(ll){ const m=toM(ll); return CH.map(x=>({...x,d:d2(m,toM(x.ll))})).sort((a,b)=>a.d-b.d); }
+
+function renderList(){
+  const el=document.getElementById('corrList');
+  el.innerHTML = S.corridors.length? S.corridors.map(c=>{ const F=fin(PIECE[c.id]);
+    const dot = S.actor==='operator'||S.actor==='public' ? (F.npv>=0?'#3f7d4e':'#b8462f') : ACTORS[S.actor].color;
+    return `<div class="citem ${S.focus===c.id?'on':''}" data-id="${c.id}"><span class="dot" style="background:${dot}"></span>
+      <span>${c.name}<br><small style="color:var(--muted)">${km(c.L)} · ${PIECE[c.id].ac} AC + ${PIECE[c.id].dc} DC</small></span>
+      <span class="tag ${c.status==='planned'?'plan':''}">${c.status==='planned'?'planned':'operating'}</span>
+      <button class="x" data-del="${c.id}" title="Remove">×</button></div>`; }).join('')
+    : '<div class="note">No corridor yet. Click a street on the map.</div>';
+  el.querySelectorAll('.citem').forEach(d=>d.onclick=e=>{ if(e.target.dataset.del){ S.corridors=S.corridors.filter(c=>c.id!==e.target.dataset.del); if(S.focus===e.target.dataset.del)S.focus=null; refresh(); return;}
+    focusOn(d.dataset.id); const c=S.corridors.find(x=>x.id===d.dataset.id); if(c&&S.focus) fitTo(c); });
+}
+function fitTo(c){ const xs=c.coords.map(p=>p[0]), ys=c.coords.map(p=>p[1]); map.fitBounds([[Math.min(...xs),Math.min(...ys)],[Math.max(...xs),Math.max(...ys)]],{padding:120,maxZoom:16.5,pitch:55,duration:900}); }
+function renderLegend(){
+  const L=document.getElementById('legend'); const a=S.actor; let h='';
+  const li=(c,t,sq)=>`<div class="li"><i style="background:${c};${sq?'border-radius:3px':''}"></i>${t}</div>`;
+  if(a==='operator') h=li('#3f7d4e','Profitable street (NPV > 0)')+li('#b8462f','Not profitable')+li('#f6d44a','DC fast charger')+li('#fff;border:1px solid #999','AC charger');
+  if(a==='public') h=li('#3f7d4e','Operator profitable, no subsidy')+li('#d9772b','Needs a subsidy')+li('#3f7d4e55','200 m catchment');
+  if(a==='heat') h=li('#d9772b','Shared trench (5GDHC + EV)')+li('#f6d44a','DC hub')+li('#fff;border:1px solid #999','AC charger');
+  if(a==='kepco') h=li('#3f7d4e','Charger OK')+li('#e0a43a','Maintenance due')+li('#b8462f','Offline')+li('#9aa3a0','Planned');
+  if(a==='users') h=li('#3f7d4e','Free now')+li('#e0a43a','In use')+li('#9c8ac4','Planned')+li('#7a5bb0','You');
+  L.innerHTML=h+'<div class="li" style="margin-top:4px;color:var(--muted)">Dashed line = planned street</div>';
+}
+
+// ===================================================================
+//  Panels per actor
+// ===================================================================
+const kpi=(l,v,s,cls='')=>`<div class="kpi"><div class="l">${l}</div><div class="v ${cls}">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+const row=(l,v,cls='')=>`<div class="r ${cls}"><span>${l}</span><span>${v}</span></div>`;
+function bars(items){ const mx=Math.max(...items.map(i=>Math.abs(i[1])),1);
+  return '<div class="bars">'+items.map(([l,v,c])=>`<div class="b"><div class="t"><span>${l}</span><b>${money(v)}</b></div><div class="track"><div class="fill" style="width:${Math.abs(v)/mx*100}%;background:${c||'var(--green)'}"></div></div></div>`).join('')+'</div>'; }
+function slider(id,label,min,max,step,val,fmt){ return `<div class="slider"><label><span>${label}</span><b id="${id}V">${fmt(val)}</b></label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></div>`; }
+function bindSlider(id,key,fmt,scale=1){ const el=document.getElementById(id); if(!el)return; el.oninput=()=>{P[key]=+el.value*scale; document.getElementById(id+'V').textContent=fmt(+el.value); refreshSoon();}; }
+let _rt; function refreshSoon(){clearTimeout(_rt);_rt=setTimeout(refresh,60)}
+
+function header(list, R){
+  const f=S.corridors.find(c=>c.id===S.focus);
+  const title = f? f.name : `All corridors (${list.length})`;
+  const local = f? (f.pilot? `${km(f.L)} · Excel pilot assumptions (average curb and density) placed on a real street` : `${km(f.L)} · ${f.nInt!=null?f.nInt+' crossings ('+Math.round(f.interM)+' m of curb lost)':'crossings n/a'} · built density ×${f.density0.toFixed(2)} the Guro average`) : `${km(R.L)} in total`;
+  const dens = f&&!f.pilot ? `<div class="slider"><label><span>Demand around this street (×Guro average)</span><b id="sDensV">×${f.density.toFixed(2)}</b></label><input type="range" id="sDens" min="0.2" max="3" step="0.05" value="${f.density}"></div><div class="note" style="margin-top:-4px">Measured from floor area within ${P.catchM} m (offices count too). Lower it for office districts, raise it for dense housing.</div>`:'';
+  return `<div class="pcard"><div class="kicker">${ACTORS[S.actor].ic} ${ACTORS[S.actor].name} · ${f?(f.status==='planned'?'planned street':'operating street'):'all streets'}</div>
+   <h2>${title}</h2><div class="note" style="margin-top:0">${local}${S.focus&&S.corridors.length>1?' · <a href="#" id="allLink">show all streets</a>':''}</div>
+   <div class="kpis" style="margin-top:10px">${kpi('Chargers',`${R.ac} AC · ${R.dc} DC`,`${R.positions} curb positions available${R.ps.some(p=>p.curbLimited)?' · <b class="bad">curb is the limit</b>':''}`)}
+   ${kpi('Energy sold',num(fin(R).mwh)+' MWh','per year · '+(S.scen==='today'?"today's Seoul use":'Dare to Dream demand'))}</div>${dens}</div>`;
+}
+
+function renderPanel(){
+  const el=document.getElementById('panel'); if(!S.actor){el.innerHTML='';return}
+  const list=scopeList(); const R=evalAll(list);
+  if(!R){ el.innerHTML=`<div class="empty"><div class="big">🗺️</div><p><b>Click a street on the map</b> to place a corridor, or add the 3 km pilot.</p><p class="note">Each street is costed with the pilot model, adapted to its length, its crossings and how densely built the area around it is.</p></div>`+(S.actor==='users'?usersPanel(null):''); bindAll(); return; }
+  let h=header(list,R);
+  h += ({operator:operatorPanel,heat:heatPanel,kepco:kepcoPanel,users:usersPanel,public:publicPanel})[S.actor](R,list);
+  h += `<div class="pcard"><div class="note"><b>How a street is costed.</b> Same formulas as the Excel pilot (3 km = NPV ${money(1991558*P.fx)} at default inputs). What changes per street: its length; curb lost to crossings counted on the map (15 m for an alley, 25 m tertiary, 35 m for a main road) plus 18% for bus stops, crosswalks, driveways and trees; and demand, scaled by the built floor area within ${P.catchM} m compared with the Guro average. Live charger data is <span class="sim">simulated</span>.</div></div>`;
+  el.innerHTML=h; bindAll();
+}
+function bindAll(){
+  const a=document.getElementById('allLink'); if(a) a.onclick=e=>{e.preventDefault();S.focus=null;refresh()};
+  bindSlider('sContrib','contrib',v=>v+'%',0.01);
+  bindSlider('sSub','subsidy',v=>v+'%',0.01);
+  bindSlider('sPAC','priceAC',v=>'₩'+v);
+  bindSlider('sPDC','priceDC',v=>'₩'+v);
+  bindSlider('sEV','evShare',v=>v+'%',0.01);
+  const sd=document.getElementById('sDens'); if(sd) sd.oninput=()=>{ const f=S.corridors.find(c=>c.id===S.focus); if(!f)return; f.density=+sd.value; document.getElementById('sDensV').textContent='×'+(+sd.value).toFixed(2); refreshSoon(); };
+  const hp=document.getElementById('heatPipe'); if(hp) hp.onchange=()=>{S.heatPipe=+hp.value||0; renderPanel();};
+  document.querySelectorAll('[data-book]').forEach(b=>b.onclick=()=>openBooking(CH.find(x=>x.id===b.dataset.book)));
+  document.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>{S.bookings=S.bookings.filter(x=>x.key!==b.dataset.cancel);renderPanel()});
+  document.querySelectorAll('[data-fly]').forEach(b=>b.onclick=()=>{const c=CH.find(x=>x.id===b.dataset.fly); if(c) map.flyTo({center:c.ll,zoom:17.5,pitch:60})});
+}
+
+// ---------- OPERATOR ----------
+function operatorPanel(R){
+  const F=fin(R), ok=F.npv>=0;
+  const capex=[['Chargers (AC + DC)',R.equip],['KEPCO grid connection',R.grid],['Trench: cables & conduits',R.cables],['Trench: contribution to heat utility',R.contribution]];
+  if(R.subsidyKRW) capex.push(['State subsidy',-R.subsidyKRW,'#c2a24e']);
+  return `<div class="pcard"><div class="verdict ${ok?'':'no'}"><div class="kicker" style="color:${ok?'var(--gold)':'#ffd9cf'}">Should you build here?</div>
+    <div class="big">${ok?'YES, IT PAYS':'NOT AT THESE NUMBERS'}</div>
+    <p>NPV ${money(F.npv)} over ${P.years} years at ${pct(P.rate)} · IRR ${F.irr==null?'n/a':pct(F.irr,1)} · payback ${F.pay?F.pay.toFixed(1)+' yrs':'never'}</p></div>
+    <div class="kpis" style="margin-top:10px">${kpi('Investment (dig once)',money(R.capexDig),'vs '+money(R.capexSep)+' digging alone')}
+    ${kpi('Net income / year',money(F.net),'revenue − electricity − capacity − O&M',F.net>=0?'good':'bad')}</div></div>
+   <div class="pcard"><div class="kicker">Dig once vs digging alone</div>
+    <div class="rows">${row('','<span style="color:var(--muted)">Alone &nbsp;·&nbsp; Dig once</span>')}
+     ${row('Investment',money(R.capexSep)+' · '+money(R.capexDig))}
+     ${row('NPV',money(F.npvSep)+' · <b class="'+(F.npv>=0?'good':'bad')+'">'+money(F.npv)+'</b>')}
+     ${row('IRR',(F.irrSep==null?'n/a':pct(F.irrSep,1))+' · '+(F.irr==null?'n/a':pct(F.irr,1)))}
+     ${row('Payback',(F.paySep?F.paySep.toFixed(1):'–')+' · '+(F.pay?F.pay.toFixed(1)+' yrs':'–'))}</div>
+    <div class="note">Sharing the trench saves you ${money(R.trenchSep-R.trenchDig)} on this street.</div></div>
+   <div class="pcard"><div class="kicker">Investment, once (${P.year0})</div>${bars(capex)}</div>
+   <div class="pcard"><div class="kicker">Every year</div><div class="rows">
+     ${row('Charging revenue',money(F.rev))}
+     ${row('Electricity bought from KEPCO','−'+money(F.opex.elec))}
+     ${row('KEPCO capacity charge','−'+money(F.opex.cap))}
+     ${row('O&M, insurance, payment fees','−'+money(F.opex.om))}
+     ${row('Net income',money(F.net),'tot')}</div>
+     ${cashChart(R.capexDig,F.net)}</div>
+   <div class="pcard"><div class="kicker">Try the deal</div>
+     ${slider('sContrib','Your share of the shared civil works',0,100,5,Math.round(P.contrib*100),v=>v+'%')}
+     ${slider('sSub','State subsidy on charger hardware',0,100,5,Math.round(P.subsidy*100),v=>v+'%')}
+     ${slider('sPAC','AC price (KRW/kWh)',200,450,5,P.priceAC,v=>'₩'+v)}
+     ${slider('sPDC','DC price (KRW/kWh)',250,500,5,P.priceDC,v=>'₩'+v)}
+     ${slider('sEV','EV share of cars',10,100,5,Math.round(P.evShare*100),v=>v+'%')}
+     <div class="note">Main risk: demand. Switch the top bar to "Today's Seoul use" to see this street with today's charger use (${pct(R.tMwh/R.mwh)} of the Dare to Dream volume).</div></div>`;
+}
+function cashChart(I,net){
+  const W=360,H=120,n=P.years; const pts=[]; let c=-I; pts.push(c); for(let i=1;i<=n;i++){c+=net/Math.pow(1+P.rate,i);pts.push(c)}
+  const mn=Math.min(...pts,0), mx=Math.max(...pts,0), y=v=>8+(H-24)*(mx-v)/((mx-mn)||1), x=i=>30+(W-40)*i/n;
+  const path=pts.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+','+y(v).toFixed(1)).join(' ');
+  const be=pts.findIndex(v=>v>=0);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="margin-top:8px"><line x1="30" x2="${W-10}" y1="${y(0)}" y2="${y(0)}" stroke="#bbb" stroke-dasharray="3 3"/>
+   <path d="${path}" fill="none" stroke="#1f3a2b" stroke-width="2.5"/>${be>0?`<circle cx="${x(be)}" cy="${y(pts[be])}" r="4" fill="#c2a24e"/><text x="${x(be)+6}" y="${y(pts[be])-6}" font-size="10">break-even ${P.year0+be}</text>`:''}
+   <text x="30" y="${H-2}" font-size="10" fill="#6b7366">${P.year0}</text><text x="${W-40}" y="${H-2}" font-size="10" fill="#6b7366">${P.year0+n}</text>
+   <text x="2" y="12" font-size="9" fill="#6b7366">cum. disc.</text></svg>`;
+}
+
+// ---------- HEAT UTILITY ----------
+function heatPanel(R){
+  const pipe=S.heatPipe*R.L;
+  return `<div class="pcard"><div class="kicker">The street you open anyway</div>
+    <div class="kpis">${kpi('Shared civil works',money(R.civil),'excavation, traffic, repaving · '+money(R.civil/R.L)+'/m')}
+    ${kpi('Paid to you by the operator',money(R.contribution),pct(P.contrib)+' of the civil works','good')}</div>
+    <div class="rows" style="margin-top:8px">${row('Road opened once instead of twice',km(R.L))}
+    ${row('Operator lays its own cables & conduits',money(R.cables))}
+    ${row('Your net civil-works cost',money(R.civil-R.contribution),'tot')}</div>
+    ${slider('sContrib','Operator contribution (the deal)',0,100,5,Math.round(P.contrib*100),v=>v+'%')}
+    <div class="note">Civil works are taken from the pilot's EV-trench estimate (80% of 400,000 KRW/m). A 5GDHC trench is wider, so your real cost is higher: this is the part both networks share.</div></div>
+   <div class="pcard"><div class="kicker">5GDHC pipes on this street</div>
+    <div class="rows">${row('Pipe cost per metre (KRW)','<input id="heatPipe" type="number" min="0" step="10000" value="'+(S.heatPipe||'')+'" placeholder="add value" style="width:120px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">')}
+    ${pipe?row('Pipes & installation',money(pipe))+row('Total for this street (net of contribution)',money(pipe+R.civil-R.contribution),'tot'):''}</div>
+    <div class="note">Pipe costs are not in the business model yet. Enter your estimate per metre to see the full heat-network cost of this street.</div></div>
+   <div class="pcard"><div class="kicker">What sharing changes</div><div class="rows">
+    ${row('One set of surveys, mobilisation, closures','✓')}${row('Road restoration done once','✓')}${row('Charger hardware cost','unchanged')}</div></div>`;
+}
+
+// ---------- KEPCO ----------
+function kepcoPanel(R, list){
+  const F=fin(R);
+  const mine=CH.filter(x=>list.some(c=>c.id===x.cid));
+  const op=mine.filter(x=>x.status==='operating');
+  const cnt=k=>op.filter(x=>x.health===k).length;
+  const top=op.slice().sort((a,b)=>b.rev-a.rev).slice(0,4), bad=op.filter(x=>x.health!=='ok').slice(0,5);
+  const unserved = R.unserved;
+  const addAC = Math.ceil(unserved/(P.acKW*24*P.maxUtilAC));
+  return `<div class="pcard"><div class="kicker">Grid load</div>
+    <div class="kpis">${kpi('Installed',num(R.instAC+R.instDC,2)+' MW',`${num(R.instAC,2)} AC + ${num(R.instDC,2)} DC`)}
+    ${kpi('Expected peak',num(R.peakAC+R.peakDC,2)+' MW',`AC × ${pct(P.cfAC)} + DC × ${pct(P.cfDC)} coincidence`)}</div>
+    <div class="rows" style="margin-top:8px">${row('Pad-mounted transformers (DC hubs)',R.hubs)}${row('Peak per km of street',num((R.peakAC+R.peakDC)/(R.L/1000),2)+' MW/km')}</div>
+    ${loadProfile(R)}
+    <div class="note">Final peak needs a KEPCO hosting-capacity check (as in the Excel).</div></div>
+   <div class="pcard"><div class="kicker">What KEPCO earns</div><div class="rows">
+    ${row('Connection charges (once)',money(R.grid))}
+    ${row('Electricity sold / year',money(F.opex.elec)+' · '+num(F.mwh)+' MWh')}
+    ${row('Capacity charge / year',money(F.opex.cap))}
+    ${row('Total every year',money(F.opex.elec+F.opex.cap),'tot')}</div></div>
+   <div class="pcard"><div class="kicker">Charger health <span class="sim">simulated</span></div>
+    ${op.length?`<div class="kpis">${kpi('Working',cnt('ok'),'of '+op.length+' operating','good')}${kpi('Needs attention',cnt('maintenance')+cnt('offline'),cnt('offline')+' offline · '+cnt('maintenance')+' maintenance due',cnt('offline')?'bad':'')}</div>
+    <div class="rows" style="margin-top:8px">${bad.map(x=>row(`<a href="#" data-fly="${x.id}">${x.type} #${x.num}</a> · ${x.street}`,`<span class="${x.health==='offline'?'bad':''}">${x.health==='offline'?'offline':'maintenance due'}</span>`)).join('')||row('All chargers OK','✓')}</div>
+    <div class="kicker" style="margin-top:10px">Best chargers today</div><div class="rows">${top.map(x=>row(`<a href="#" data-fly="${x.id}">${x.type} #${x.num}</a> · ${num(x.kwh)} kWh`,money(x.rev)+'/day')).join('')}</div>`
+    :'<div class="note">No operating corridor selected: monitoring starts once a street is commissioned. Add the 3 km pilot to see it.</div>'}</div>
+   <div class="pcard"><div class="kicker">Where to add chargers next</div>
+    ${unserved>1?`<div class="rows">${row('Demand the curb cannot serve',num(unserved)+' kWh/day')}${row('≈ extra 7 kW chargers needed',addAC)}</div><div class="note">This street is curb-limited. Extend the corridor to a side street to serve the rest.</div>`
+      :'<div class="note">All expected demand on these streets is served. Streets with a higher density factor (more floor area nearby) are the best next candidates.</div>'}</div>`;
+}
+function loadProfile(R){
+  // simulated daily shape: AC mostly evening/night, DC daytime (normalised to daily energy)
+  const acS=[1.6,1.7,1.7,1.6,1.4,1.1,.7,.5,.4,.4,.4,.5,.5,.5,.6,.7,.9,1.2,1.4,1.5,1.6,1.6,1.6,1.6], dcS=[.2,.1,.1,.1,.1,.3,.7,1.2,1.5,1.4,1.3,1.4,1.5,1.4,1.4,1.5,1.7,1.8,1.6,1.3,1,.7,.5,.3];
+  const sAC=acS.reduce((a,b)=>a+b), sDC=dcS.reduce((a,b)=>a+b);
+  const eac=(S.scen==='today'?R.tAC:R.eAC)*R.ac, edc=(S.scen==='today'?R.tDC:R.eDC)*R.dc;
+  const v=acS.map((x,i)=>eac*x/sAC+edc*dcS[i]/sDC); const mx=Math.max(...v, (R.peakAC+R.peakDC)*1000);
+  const W=360,H=110,bw=(W-30)/24; const peak=(R.peakAC+R.peakDC)*1000, yp=H-16-(H-26)*peak/mx;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="margin-top:8px">${v.map((x,i)=>`<rect x="${26+i*bw}" y="${H-16-(H-26)*x/mx}" width="${bw-2}" height="${(H-26)*x/mx}" fill="#3b6ea8" rx="2"/>`).join('')}
+   <line x1="26" x2="${W}" y1="${yp}" y2="${yp}" stroke="#b8462f" stroke-dasharray="4 3"/><text x="${W-4}" y="${yp-4}" font-size="9.5" text-anchor="end" fill="#b8462f">design peak ${num(peak)} kW</text>
+   <text x="26" y="${H-3}" font-size="9" fill="#6b7366">00h</text><text x="${26+12*bw}" y="${H-3}" font-size="9" fill="#6b7366">12h</text><text x="${W-14}" y="${H-3}" font-size="9" fill="#6b7366">24h</text>
+   <text x="0" y="10" font-size="9" fill="#6b7366">avg kW <tspan font-weight="600">· simulated day</tspan></text></svg>`;
+}
+
+// ---------- USERS ----------
+function usersPanel(R, list){
+  let h='';
+  if(S.me){ const n=nearest(S.me); const ac=n.find(x=>x.type==='AC'), dc=n.find(x=>x.type==='DC');
+    const freeAC=n.find(x=>x.type==='AC'&&x.status==='operating'&&x.health==='ok'&&!x.busy);
+    const card=(x,t)=> x? `<div class="kpi" style="margin-top:8px"><div class="l">${t}</div><div class="v">${Math.round(x.d)} m <span style="font-size:13px;font-family:Poppins;font-weight:500">· ${Math.max(1,Math.round(x.d/80))} min walk</span></div>
+       <div class="s">${x.type==='AC'?'7 kW':'100 kW'} · ${priceKWh(x.type==='AC'?P.priceAC:P.priceDC)} · ${x.street} · ${statusTxt(x)}</div>
+       <div style="margin-top:6px;display:flex;gap:6px"><button class="btn" data-fly="${x.id}" style="padding:6px 10px;font-size:12px">Show</button>${x.status==='operating'&&x.health==='ok'?`<button class="btn y" data-book="${x.id}" style="padding:6px 10px;font-size:12px">Book</button>`:''}</div></div>`:'';
+    h+=`<div class="pcard"><div class="kicker">Near you</div>${CH.length?card(ac,'Nearest slow charger (AC)')+(freeAC&&freeAC!==ac?card(freeAC,'Nearest free now'):'')+card(dc,'Nearest fast charger (DC)'):'<div class="note">No chargers on the map yet: add the pilot or pick a street.</div>'}</div>`;
+  } else h+=`<div class="pcard"><div class="kicker">Near you</div><div class="note" style="margin:0">Choose <b>My location</b> and click where you live or park.</div></div>`;
+  h+=`<div class="pcard"><div class="kicker">What it costs you</div><div class="rows">
+    ${row('Slow charge, AC 7 kW',priceKWh(P.priceAC))}${row('Fast charge, DC 100 kW',priceKWh(P.priceDC))}
+    ${row('Overnight top-up (30 kWh, ~4.5 h)',money(30*P.priceAC))}${row('Fast top-up (30 kWh, ~30 min)',money(30*P.priceDC))}
+    ${row('A week of driving (37.8 km/day)',money(7*P.kmDay/P.kmPerKWh*P.priceAC)+' on AC')}</div>
+    <div class="note">MCEE public tariff from 1 Aug 2026. Planned streets show where chargers would go, so you can see how close they would be.</div></div>`;
+  if(R){ const mine=CH.filter(x=>list.some(c=>c.id===x.cid)&&x.status==='operating');
+    const free=mine.filter(x=>x.health==='ok'&&!x.busy);
+    h+=`<div class="pcard"><div class="kicker">On this street now <span class="sim">simulated</span></div>${mine.length?`<div class="kpis">${kpi('Free AC',free.filter(x=>x.type==='AC').length,'of '+mine.filter(x=>x.type==='AC').length,'good')}${kpi('Free DC',free.filter(x=>x.type==='DC').length,'of '+mine.filter(x=>x.type==='DC').length,'good')}</div>`:'<div class="note">Planned street: chargers are not running yet.</div>'}</div>`; }
+  h+=`<div class="pcard"><div class="kicker">My bookings</div>${S.bookings.length?'<div class="rows">'+S.bookings.map(b=>row(`${b.type} #${b.num} · ${b.street}<br><small>${b.slot}</small>`,`<button class="btn ghost" data-cancel="${b.key}" style="padding:3px 8px;font-size:11px">Cancel</button>`)).join('')+'</div>':'<div class="note" style="margin:0">No bookings yet. Click a green charger to book it.</div>'}</div>`;
+  return h;
+}
+function statusTxt(x){ return x.status!=='operating'?'planned':x.health!=='ok'?'out of service':x.busy?'in use':'<b class="good">free now</b>'; }
+function chargerClick(p, ll){
+  const x=CH.find(c=>c.id===p.id); if(!x) return;
+  let body=`<div class="kicker">${x.type==='AC'?'Slow charger · 7 kW':'Fast charger · 100 kW'} #${x.num}</div><b>${x.street}</b><div class="rows" style="margin-top:6px">`;
+  if(S.actor==='kepco') body+=row('Health',x.status!=='operating'?'planned':x.health)+row('Energy today',num(x.kwh)+' kWh')+row('Revenue today',money(x.rev))+row('Peak draw',x.type==='AC'?'7 kW':'100 kW');
+  else if(S.actor==='users') body+=row('Price',priceKWh(x.type==='AC'?P.priceAC:P.priceDC))+row('Status',statusTxt(x));
+  else body+=row('Hardware',money(x.type==='AC'?P.acCost:P.dcCost))+row('Grid connection',money(x.type==='AC'?P.kepcoLV+2*P.kepcoLVkW:P.kepcoDC))+row('Energy / day',num(x.kwh)+' kWh')+row('Revenue / day',money(x.rev));
+  body+='</div>';
+  if(S.actor==='users'&&x.status==='operating'&&x.health==='ok') body+=`<button class="btn y" style="margin-top:8px;width:100%" onclick="openBooking(CH.find(c=>c.id==='${x.id}'))">Book this charger</button>`;
+  new maplibregl.Popup({closeButton:true,maxWidth:'260px'}).setLngLat(x.ll).setHTML(body).addTo(map);
+}
+function openBooking(x){
+  const now=new Date(); const slots=[]; for(let i=1;i<=12;i++){const d=new Date(now.getTime()+i*3600e3); d.setMinutes(0); slots.push(d)}
+  const taken=i=>rnd(x.id+'s'+i)<(x.type==='AC'?0.35:0.5);
+  const M=document.getElementById('modal'), B=document.getElementById('modalBox'); let sel=null;
+  B.innerHTML=`<div class="kicker">Book a charger</div><h2 class="osw" style="font-size:22px">${x.type==='AC'?'Slow 7 kW':'Fast 100 kW'} #${x.num} · ${x.street}</h2>
+   <p class="note">Pick a start time. ${x.type==='AC'?'Slow chargers are booked for 4 hours (overnight slots welcome).':'Fast chargers are booked for 45 minutes.'} Price ${priceKWh(x.type==='AC'?P.priceAC:P.priceDC)}.</p>
+   <div class="slots">${slots.map((d,i)=>`<button data-i="${i}" ${taken(i)?'disabled':''}>${d.toTimeString().slice(0,5)}</button>`).join('')}</div>
+   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" id="bkX">Close</button><button class="btn" id="bkOK" disabled>Confirm booking</button></div>
+   <p class="note">Demo booking: it lives only in this page.</p>`;
+  M.style.display='flex';
+  B.querySelectorAll('.slots button').forEach(b=>b.onclick=()=>{B.querySelectorAll('.slots button').forEach(z=>z.classList.remove('on'));b.classList.add('on');sel=slots[+b.dataset.i];B.querySelector('#bkOK').disabled=false});
+  B.querySelector('#bkX').onclick=()=>M.style.display='none';
+  B.querySelector('#bkOK').onclick=()=>{S.bookings.push({key:x.id+sel.getTime(),type:x.type,num:x.num,street:x.street,slot:sel.toLocaleString('en-GB',{weekday:'short',hour:'2-digit',minute:'2-digit'})}); M.style.display='none'; toast('Booked ✓'); renderPanel();};
+}
+window.openBooking=openBooking;
+
+// ---------- STATE + GURO-GU ----------
+function publicPanel(R, list){
+  const R0=evalAll(list,{subsidy:0}); const F0=fin(R0);
+  const gap=S.scen==='today'?R0.gapToday:R0.gapDtD, gapOther=S.scen==='today'?R0.gapDtD:R0.gapToday;
+  const pmAfterD=23-R.dDistrict, pmAfterC=23-R.dCatch;
+  return `<div class="pcard"><div class="kicker">What this street costs</div>
+    <div class="kpis">${kpi('Total investment',money(R0.capexDig),'chargers + grid + operator trench share')}
+    ${kpi('If dug separately',money(R0.capexSep),'saving '+money(R0.capexSep-R0.capexDig))}</div></div>
+   <div class="pcard"><div class="kicker">Subsidy needed to get it built</div>
+    <div class="verdict ${gap>0?'no':''}"><div class="big">${gap>0?money(gap):'NONE'}</div>
+    <p>${gap>0?`One-off support the operator needs to break even (NPV = 0) with ${S.scen==='today'?"today's charger use":'Dare to Dream demand'}: ${pct(gap/R0.equip)} of the charger hardware.`:`With ${S.scen==='today'?"today's charger use":'Dare to Dream demand'} the operator earns NPV ${money(F0.npv)} without public money.`}</p></div>
+    <div class="rows" style="margin-top:8px">${row(S.scen==='today'?'With Dare to Dream demand':"With today's Seoul use",gapOther>0?money(gapOther):'none needed')}
+    ${gap>0?row('Per charger',money(gap/(R0.ac+R0.dc)))+row('Per EV owner without a home charger',money(gap/Math.max(1,R0.evsPublic))):''}</div>
+    ${slider('sSub','Subsidy on charger hardware',0,100,5,Math.round(P.subsidy*100),v=>v+'%')}
+    <div class="note">With ${pct(P.subsidy)} subsidy (${money(R.subsidyKRW)}) the operator's NPV is <b class="${fin(R).npv>=0?'good':'bad'}">${money(fin(R).npv)}</b>.</div></div>
+   <div class="pcard"><div class="kicker">Air quality, before → after</div>
+    <div class="kpis">${kpi('Around this street',`${num(23,1)} → ${num(pmAfterC,1)}`,'µg/m³ PM2.5 · within '+P.catchM+' m, indicative')}
+    ${kpi('Guro-gu average',`${num(23,2)} → ${num(pmAfterD,2)}`,'µg/m³ PM2.5 from this street alone')}</div>
+    <div class="rows" style="margin-top:8px">${row('Electric km supplied / year',num(R.eKm/1e6,1)+' M km')}
+    ${row('Primary PM2.5 avoided',num(R.pmT*1000)+' kg/yr')}${row('NOx avoided',num(R.noxT,1)+' t/yr')}
+    ${row('Whole Dare to Dream plan','23.0 → 18.2 µg/m³')}</div>
+    <div class="note">Team PM2.5 model: local PM2.5 = 11.5 µg/m³ × (0.4 · primary PM + 0.6 · NOx, relative to Guro's 179 t and 2,804 t a year). Electric km replace the average Guro petrol/diesel car. "Around this street" assumes the avoided emissions stay in the ${num(R.catchKm2,2)} km² catchment, so treat it as an upper bound.</div></div>
+   <div class="pcard"><div class="kicker">For Guro-gu residents</div><div class="rows">
+    ${row('EV owners without a home charger served',num(R.evsPublic))}
+    ${row('Streets opened once instead of twice',km(R.L))}
+    ${row('Curb positions turned into charging',R.ac+R.dc+R.hubs+' of '+R.positions)}</div></div>`;
+}
+
+// ===================================================================
+//  Assumptions drawer
+// ===================================================================
+const ASM=[['priceAC','AC charging price','KRW/kWh','MCEE tariff, 1 Aug 2026'],['priceDC','DC charging price','KRW/kWh','MCEE tariff, 1 Aug 2026'],
+ ['elecAC','Electricity bought, AC (night)','KRW/kWh','KEPCO EV tariff, LV'],['elecDC','Electricity bought, DC (day)','KRW/kWh','KEPCO EV tariff, HV'],
+ ['acCost','AC charger installed','KRW/unit','Korean 7 kW price lists'],['dcCost','DC charger installed','KRW/unit','Korean 100 kW units'],
+ ['trenchM','Separate EV trench','KRW/m','Seoul open-cut estimate'],['cableShare','Cables & conduits share','0–1','Bottom-up breakdown'],
+ ['contrib','Operator share of civil works','0–1','Team assumption (deal)'],['om','O&M per year','share of hardware','Team assumption'],
+ ['evShare','EV share of cars','0–1','Final report, Dare to Dream'],['capture','Public demand served by corridor','0–1','Team assumption'],
+ ['catchM','Catchment each side','m','2–3 min walk'],['rate','Discount rate','0–1','Final report §7.3'],['years','Years of operation','yrs','2036–2050'],['fx','Exchange rate','KRW/USD','KB Kookmin, Nov 2026']];
+document.getElementById('asmBtn').onclick=()=>{
+  const M=document.getElementById('modal'),B=document.getElementById('modalBox');
+  B.innerHTML=`<div class="kicker">Inputs from Financial Business Model.xlsx</div><h2 class="osw" style="font-size:22px">Assumptions</h2>
+   <p class="note">Change a value and every street is re-costed. The Excel file stays the reference.</p>
+   <table class="asm">${ASM.map(([k,l,u,s])=>`<tr><td><b>${l}</b><br><small style="color:var(--muted)">${s}</small></td><td><input data-k="${k}" type="number" step="any" value="${P[k]}"></td><td><small>${u}</small></td></tr>`).join('')}</table>
+   <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn ghost" id="asmReset">Reset to Excel</button><button class="btn" id="asmClose">Done</button></div>`;
+  M.style.display='flex';
+  B.querySelectorAll('input[data-k]').forEach(i=>i.onchange=()=>{const v=parseFloat(i.value); if(!isNaN(v)){P[i.dataset.k]=v; refresh();}});
+  B.querySelector('#asmClose').onclick=()=>M.style.display='none';
+  B.querySelector('#asmReset').onclick=()=>{P=Object.assign({},DEFAULTS); S.corridors.forEach(c=>Object.assign(c,{})); M.style.display='none'; refresh();};
+};
+document.getElementById('modal').onclick=e=>{ if(e.target.id==='modal') e.target.style.display='none'; };
+</script>
+</body>
+</html>
