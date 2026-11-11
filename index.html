@@ -16,11 +16,12 @@ html[lang=ko] body{font-family:'Noto Sans KR',Poppins,system-ui,sans-serif;word-
 h1,h2,h3,.osw{font-family:Oswald,'Noto Sans KR',Impact,sans-serif;letter-spacing:.02em;text-transform:uppercase;margin:0}
 html[lang=ko] h1,html[lang=ko] h2,html[lang=ko] h3,html[lang=ko] .osw{letter-spacing:0}
 button{font:inherit;cursor:pointer}
-.border-deco{height:10px;flex:none;background:repeating-linear-gradient(90deg,var(--gold) 0 2px,transparent 2px 14px),var(--green);opacity:.9}
+.topline{height:4px;flex:none;background:linear-gradient(90deg,#d9772b 0%,#f6d44a 50%,#5b9bd5 100%)}
+.screen{background-color:var(--green);background-image:radial-gradient(ellipse 60% 70% at 85% 35%,rgba(246,212,74,.10),transparent 70%),radial-gradient(ellipse 50% 60% at 0% 100%,rgba(217,119,43,.10),transparent 70%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.045' stroke-width='1.2'%3E%3Cpath d='M0 70h320M0 205h320M85 0v320M235 0v320M0 140 L160 118 L320 146M150 0 L170 320'/%3E%3C/g%3E%3C/svg%3E")}
 .lang{display:inline-flex;background:#ffffff14;border:1px solid #ffffff40;border-radius:999px;padding:3px}
 .lang button{border:0;background:transparent;color:#e7ece5;padding:6px 14px;border-radius:999px;font-size:12.5px;font-family:Poppins,'Noto Sans KR',sans-serif}
 .lang button.on{background:var(--yellow);color:var(--green);font-weight:600}
-.screen{position:fixed;inset:0;z-index:50;background:var(--green);color:#fff;overflow:auto;display:flex;flex-direction:column}
+.screen{position:fixed;inset:0;z-index:50;color:#fff;overflow:auto;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:12px;padding:16px 28px}
 .topbar .spacer{flex:1}
 .back{background:transparent;border:0;color:var(--gold);font-size:13px}
@@ -31,7 +32,7 @@ button{font:inherit;cursor:pointer}
 html[lang=ko] .kth{letter-spacing:.04em}
 .mega{font-size:clamp(42px,7.5vw,92px);line-height:.95;margin-top:10px}
 .mega span{display:block;color:var(--yellow);font-size:.62em;margin-top:8px}
-.lead{max-width:680px;color:#dfe6dc;margin:18px 0 26px;font-size:16px;line-height:1.6}
+.lead{max-width:640px;color:#dfe6dc;margin:20px 0 34px;font-size:16px;line-height:1.6}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;max-width:820px;margin-bottom:30px}
 .stat{border:1px solid #4d6b55;background:var(--green2);border-radius:14px;padding:14px 16px}
 .stat .v{font-family:Oswald;font-size:32px;color:var(--yellow);line-height:1.1}
@@ -43,7 +44,7 @@ html[lang=ko] .kth{letter-spacing:.04em}
 .title{font-size:clamp(32px,5vw,54px);line-height:1;margin-top:18px}
 .title span{display:block;color:var(--yellow)}
 .who{font-size:20px;color:var(--gold);margin-bottom:14px}
-.actors{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.actors{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:12px}
 .actor{background:var(--green2);border:1px solid #4d6b55;border-radius:16px;padding:18px;text-align:left;color:#fff;transition:.15s;display:flex;flex-direction:column;gap:8px;min-height:200px}
 .actor:hover{border-color:var(--yellow);transform:translateY(-2px)}
 .actor .ic{font-size:26px}
@@ -140,22 +141,20 @@ svg text{font-family:Poppins,'Noto Sans KR'}
 <body>
 
 <section id="splash" class="screen">
-  <div class="border-deco"></div>
+  <div class="topline"></div>
   <div class="topbar"><div class="spacer"></div><div class="lang" data-lang></div></div>
   <div class="hero">
     <div class="logo biglogo">G³</div>
     <div class="kth" data-i="kth"></div>
     <h1 class="mega">Guro Goes Green<span data-i="splashTag"></span></h1>
     <p class="lead" data-i="splashLead"></p>
-    <div class="stats" id="splashStats"></div>
     <button class="enter" id="enterBtn" data-i="enter"></button>
   </div>
   <div class="foot" data-i="foot"></div>
-  <div class="border-deco"></div>
 </section>
 
 <section id="intro" class="screen" style="display:none">
-  <div class="border-deco"></div>
+  <div class="topline"></div>
   <div class="topbar"><button class="back" id="backSplash" data-i="back"></button><div class="spacer"></div><div class="lang" data-lang></div></div>
   <div class="wrap">
     <div class="logo">G³</div>
@@ -165,7 +164,6 @@ svg text{font-family:Poppins,'Noto Sans KR'}
     <div class="actors" id="actorGrid"></div>
   </div>
   <div class="foot" data-i="foot"></div>
-  <div class="border-deco"></div>
 </section>
 
 <div id="app" hidden>
@@ -400,13 +398,13 @@ let LANG = 'en';
 try { const s = localStorage.getItem('g3lang'); if (s === 'ko' || s === 'en') LANG = s; } catch (e) {}
 const T = (en, ko) => LANG === 'ko' ? ko : en;
 const STR = {
-  kth:['KTH Royal Institute of Technology · MJ2511 Energy Management · Group 6','KTH 왕립공과대학교 · MJ2511 에너지 관리 · 6조'],
+  kth:['KTH Royal Institute of Technology · MJ2511 Energy Management','KTH 왕립공과대학교 · MJ2511 에너지 관리'],
   splashTag:['Dig once, charge everywhere.','한 번 파고, 어디서나 충전.'],
-  splashLead:["One shared trench for Guro's new 5th-generation heat network and curbside EV chargers. We built a 3 km pilot business case; this app puts it on real Guro streets, for every actor involved.",
-              '구로의 5세대 지역냉난방망과 도로변 전기차 충전기를 하나의 공동 굴착으로 함께 설치합니다. 3km 시범사업의 사업성을 분석했고, 이 앱은 그 결과를 실제 구로 도로 위에서 모든 이해관계자의 관점으로 보여줍니다.'],
+  splashLead:["One shared trench for Guro's new 5th-generation heat network and curbside EV chargers. Pick any street in Guro and see what it means for you.",
+              '구로의 5세대 지역냉난방망과 도로변 전기차 충전기를 하나의 공동 굴착으로 함께 설치합니다. 구로의 어느 도로든 골라, 당신에게 어떤 의미인지 확인해 보세요.'],
   enter:['Enter ›','시작하기 ›'],
-  foot:['Guro Goes Green · KTH MJ2511 · Group 6 · Model: Financial Business Model.xlsx (2026 prices) · Map © OpenStreetMap contributors, OpenFreeMap',
-        'Guro Goes Green · KTH MJ2511 · 6조 · 모델: Financial Business Model.xlsx (2026년 가격) · 지도 © OpenStreetMap 기여자, OpenFreeMap'],
+  foot:['Guro Goes Green · KTH MJ2511 · Model: Financial Business Model.xlsx (2026 prices) · Map © OpenStreetMap contributors, OpenFreeMap',
+        'Guro Goes Green · KTH MJ2511 · 모델: Financial Business Model.xlsx (2026년 가격) · 지도 © OpenStreetMap 기여자, OpenFreeMap'],
   back:['‹ Back','‹ 처음으로'],
   introT1:['Dig once, charge everywhere.','한 번 파고, 어디서나 충전.'],
   introT2:['Who are you?','당신은 누구입니까?'],
@@ -429,7 +427,7 @@ function applyLang(){
     el.innerHTML = `<button data-l="en" class="${LANG==='en'?'on':''}">EN</button><button data-l="ko" class="${LANG==='ko'?'on':''}">한국어</button>`;
     el.querySelectorAll('button').forEach(b => b.onclick = () => setLang(b.dataset.l));
   });
-  buildActors(); splashStats();
+  buildActors();
   if (S.actor) { document.getElementById('actorName').textContent = A(S.actor).short; setMode(S.mode); }
   if (map && map.getSource && map.getSource('corr')) refresh(); else renderPanel();
 }
@@ -553,15 +551,6 @@ const scenTxt = () => S.scen==='today' ? T("today's Seoul use",'현재 서울 �
 // ===================================================================
 //  Splash + role picker
 // ===================================================================
-function splashStats(){
-  const R=evaluate([{L:3000,nInt:null,density:1}],Object.assign({},DEFAULTS)); const fx=DEFAULTS.fx;
-  const st=[
-    ['+$'+(R.npvDig/fx/1e6).toFixed(2)+' M', T('NPV of the 3 km pilot for the charging operator (2036–2050, 6%)','3km 시범사업의 충전사업자 NPV (2036–2050, 할인율 6%)')],
-    [pct(R.irrDig,0), T(`Operator IRR with one shared trench (vs ${pct(R.irrSep,0)} digging alone)`,`공동 굴착 시 충전사업자 IRR (단독 굴착 시 ${pct(R.irrSep,0)})`)],
-    ['−'+pct(1-R.capexDig/R.capexSep,0), T('Up-front investment thanks to dig once','공동 굴착으로 절감되는 초기 투자비')],
-  ];
-  document.getElementById('splashStats').innerHTML=st.map(([v,l])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
-}
 function buildActors(){
   const grid=document.getElementById('actorGrid'); grid.innerHTML='';
   for(const k of Object.keys(ACTORS)){ const a=A(k);
