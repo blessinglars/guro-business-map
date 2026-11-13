@@ -648,7 +648,7 @@ function chooseActor(k){
   S.actor=k; show(null);
   document.getElementById('app').hidden=false;
   document.getElementById('actorName').textContent=A(k).short;
-  if(!map) initMap(); else { map.resize(); refresh(); }
+  if(!map){ initMap(); renderPanel(); } else { map.resize(); refresh(); }
   setMode(k==='users'?'me':'select'); setSheet(false);
   document.getElementById('tools').classList.remove('open'); document.getElementById('legend').classList.remove('open');
 }
@@ -658,10 +658,12 @@ document.getElementById('homeLogo').onclick=document.getElementById('homeBrand')
 // ===================================================================
 //  Map
 // ===================================================================
-let map;
+let map, mapReady=false;
 function initMap(){
   map = new maplibregl.Map({container:'map', style:'https://tiles.openfreemap.org/styles/liberty',
-    center:GURO, zoom:13.3, pitch:45, bearing:-12, antialias:true, maxPitch:70});
+    center:GURO, zoom:13.3, pitch:45, bearing:-12, antialias:true, maxPitch:70, attributionControl:!narrow()});
+  if(narrow()&&maplibregl.AttributionControl){ map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
+    const fold=()=>{ const el=document.querySelector('.maplibregl-ctrl-attrib'); if(el){ el.classList.remove('maplibregl-compact-show'); el.removeAttribute('open'); } }; fold(); map.once('load',fold); }
   map.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'bottom-right');
   map.on('dragstart',()=>{ if(narrow()) document.getElementById('legend').classList.remove('open'); });
   map.doubleClickZoom.disable();
@@ -683,11 +685,14 @@ function initMap(){
       paint:{'line-color':['get','col'],'line-width':['interpolate',['linear'],['zoom'],12,4,17,11],'line-dasharray':[1.6,0.9]}}, below);
     map.addLayer({id:'draft-line',type:'line',source:'draft',paint:{'line-color':'#c2a24e','line-width':4,'line-dasharray':[1,1]}});
     map.addLayer({id:'draft-pt',type:'circle',source:'draft',filter:['==','$type','Point'],paint:{'circle-radius':5,'circle-color':'#c2a24e','circle-stroke-color':'#fff','circle-stroke-width':2}});
-    map.addLayer({id:'chg-pt',type:'circle',source:'chg',minzoom:13,
-      paint:{'circle-radius':['interpolate',['linear'],['zoom'],13,['case',['==',['get','type'],'DC'],4,2],18,['case',['==',['get','type'],'DC'],11,6]],
-        'circle-color':['get','col'],'circle-stroke-color':'#fff','circle-stroke-width':['case',['==',['get','type'],'DC'],2,1]}});
+    const acFade=['case',['==',['get','type'],'DC'],1,['interpolate',['linear'],['zoom'],14.6,0,15.2,1]];   // slow chargers appear when zoomed in, so they do not hide the street
+    map.addLayer({id:'chg-pt',type:'circle',source:'chg',minzoom:12.5,
+      paint:{'circle-radius':['interpolate',['linear'],['zoom'],12.5,['case',['==',['get','type'],'DC'],3.5,1.5],15,['case',['==',['get','type'],'DC'],5.5,2.2],18,['case',['==',['get','type'],'DC'],11,6.5]],
+        'circle-color':['get','col'],'circle-opacity':acFade,'circle-stroke-opacity':acFade,
+        'circle-stroke-color':['case',['==',['get','col'],'#ffffff'],'#1f3a2b','#ffffff'],'circle-stroke-width':['case',['==',['get','type'],'DC'],2,1]}});
     map.addLayer({id:'me-pt',type:'circle',source:'me',paint:{'circle-radius':8,'circle-color':'#7a5bb0','circle-stroke-color':'#fff','circle-stroke-width':3}});
     map.addLayer({id:'me-line',type:'line',source:'me',paint:{'line-color':'#7a5bb0','line-width':2,'line-dasharray':[2,1]}});
+    mapReady=true;
     if(PILOT) addPilot(true);
     refresh();
   });
@@ -762,7 +767,7 @@ const OUTSIDE = () => T('That is outside Guro-gu: choose a place inside the high
 function onMapClick(e){
   const r=COARSE?12:5;
   const box=[[e.point.x-r,e.point.y-r],[e.point.x+r,e.point.y+r]];
-  const ch=map.queryRenderedFeatures(box,{layers:['chg-pt']});
+  const ch=map.queryRenderedFeatures(box,{layers:['chg-pt']}).filter(f=>f.properties.type==='DC'||map.getZoom()>=14.8);
   if(ch.length){ return chargerClick(ch[0].properties); }
   if(S.mode==='me'){ S.me=[e.lngLat.lng,e.lngLat.lat]; hidePill(); refresh(); return; }
   if(S.mode==='draw'){ if(!inGuro([e.lngLat.lng,e.lngLat.lat])) return toast(OUTSIDE());
@@ -969,7 +974,7 @@ async function addCorridor(o, silent, note){
   S.corridors.push(c); S.focus=c.id; refresh();
   if(!silent){ hidePill(); toast(note||T(`${cname(c)}: ${km(c.L)} added`,`${cname(c)}: ${km(c.L)} 추가됨`), note?5000:3200); fitTo(c); }
 }
-function focusOn(id){ S.focus = S.focus===id? null : id; refresh(); }
+function focusOn(id){ S.focus = (S.focus===id && S.corridors.length>1) ? null : id; refresh(); }
 
 // ===================================================================
 //  Chargers on the map (positions + simulated live data)
@@ -1043,7 +1048,7 @@ function fitTo(c){ const xs=c.coords.map(p=>p[0]), ys=c.coords.map(p=>p[1]); map
 function renderLegend(){
   const L=document.getElementById('legend'); const a=S.actor; let h='';
   const li=(c,t)=>`<div class="li"><i style="background:${c}"></i>${t}</div>`;
-  const dcl=li('#f6d44a',T('DC fast charger','DC 급속충전기')), acl=li('#fff;border:1px solid #999',T('AC charger','AC 완속충전기'));
+  const dcl=li('#f6d44a',T('DC fast charger','DC 급속충전기')), acl=li('#fff;border:1px solid #1f3a2b',T('AC slow charger (zoom in)','AC 완속충전기 (확대 시 표시)'));
   if(a==='operator') h=li('#3f7d4e',T('Profitable street (NPV > 0)','수익성 있는 도로 (NPV > 0)'))+li('#b8462f',T('Not profitable','수익성 없음'))+dcl+acl;
   if(a==='public') h=li('#3f7d4e',T('Operator profitable, no subsidy','보조금 없이 수익성 확보'))+li('#d9772b',T('Needs a subsidy','보조금 필요'))+li('#3f7d4e55',T('Area served (200 m walk)','서비스 범위 (도보 200m)'));
   if(a==='heat') h=li('#d9772b',T('Shared trench (5GDHC + EV)','공동 굴착 (5세대 열배관 + EV)'))+dcl+acl;
@@ -1084,6 +1089,7 @@ function header(list, R){
 
 function renderPanel(){
   const el=document.getElementById('panel'); if(!S.actor){el.innerHTML='';return}
+  if(!mapReady){ el.innerHTML=`<div class="empty"><div class="big">🗺️</div><p>${T('Loading the map of Guro…','구로 지도를 불러오는 중…')}</p></div>`; return; }
   const list=scopeList(); const R=evalAll(list);
   if(!R){ el.innerHTML=`<div class="empty"><div class="big">🗺️</div><p><b>${T('Click a street on the map','지도에서 도로를 클릭하세요')}</b>${T(' to add it, or load the example street.',' 추가하거나 예시 도로를 불러오세요.')}</p><p class="note">${T('Every street is calculated with the same business model, adapted to its length, its crossings and how built-up the area around it is.','모든 도로는 같은 사업 모델로 계산되며, 길이·교차로 수·주변 건물 밀도에 맞게 조정됩니다.')}</p></div>`+(S.actor==='users'?usersPanel(null):''); bindAll(); return; }
   let h=header(list,R);
