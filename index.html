@@ -31,6 +31,8 @@ button{font:inherit;cursor:pointer}
 .biglogo{width:96px;height:96px;font-size:40px;border-width:3px}
 .kth{font-family:Oswald,'Noto Sans KR';letter-spacing:.12em;color:var(--gold);font-size:13px;margin-top:22px;text-transform:uppercase}
 html[lang=ko] .kth{letter-spacing:.04em}
+.team{font-size:12.5px;color:#c9d3c6;margin-top:6px;line-height:1.5;max-width:720px}
+.team span{color:var(--gold);font-weight:600;margin-right:4px}
 .mega{font-size:clamp(42px,7.5vw,92px);line-height:.95;margin-top:10px}
 .mega span{display:block;color:var(--yellow);font-size:.62em;margin-top:8px}
 .lead{max-width:640px;color:#dfe6dc;margin:20px 0 34px;font-size:16px;line-height:1.6}
@@ -68,7 +70,7 @@ main{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 410px;mi
 #map{position:relative;min-height:0}
 #side{display:flex;flex-direction:column;min-height:0;min-width:0;background:var(--cream);border-left:1px solid var(--line)}
 #panel{overflow:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch}
-#sheetBtn,#toolsToggle,#legendBtn,#hintPill{display:none}
+#sheetBtn,#toolsToggle,#legendBtn,#hintPill,#sheetSum{display:none}
 .hdr2{display:contents}
 .trow{display:flex;gap:6px;align-items:center}
 #modeSeg{display:flex;flex:1}
@@ -164,12 +166,17 @@ svg text{font-family:Poppins,'Noto Sans KR'}
   header .seg button,header .lang button{font-size:11.5px}
   #asmBtn span{display:none}
   /* ---- map on top, details sheet below ---- */
-  main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,46fr) minmax(0,54fr)}
+  main{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+  main:not(.up) #panel{display:none}
   main.up{grid-template-rows:minmax(0,16fr) minmax(0,84fr)}
   main.up #tools,main.up #legend,main.up #legendBtn,main.up #hintPill{display:none}
   #side{border-left:0;border-top:1px solid var(--line);box-shadow:0 -6px 18px #0002;z-index:6}
-  #sheetBtn{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;border:0;background:var(--paper);border-bottom:1px solid var(--line);padding:6px 0 5px;font-size:11.5px;color:var(--muted);flex:none}
-  #sheetBtn .grab{width:44px;height:4px;border-radius:3px;background:#cfc8b4}
+  #sheetBtn{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;border:0;background:var(--paper);border-bottom:1px solid var(--line);padding:6px 12px 8px;color:var(--muted);flex:none}
+  #sheetBtn .grab{width:44px;height:4px;border-radius:3px;background:#cfc8b4;margin-bottom:2px}
+  #sheetSum{display:block;font-size:13.5px;font-weight:600;color:var(--ink);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #sheetSum .ok{color:var(--ok)} #sheetSum .no{color:var(--red)}
+  #sheetBtn.isup #sheetSum{display:none}
+  #sheetTxt{font-size:11.5px;color:var(--green);font-weight:600}
   #sheetBtn #sheetTxt::before{content:"▲ "}
   #sheetBtn.isup #sheetTxt::before{content:"▼ "}
   .pcard{margin:10px;padding:12px}
@@ -211,6 +218,7 @@ svg text{font-family:Poppins,'Noto Sans KR'}
   <div class="hero">
     <div class="logo biglogo">G³</div>
     <div class="kth" data-i="kth"></div>
+    <div class="team"><span data-i="teamLbl"></span> Sergio Garica Iledo · Rafael Juan Pascual · Gemma Pramuditho Apriliano · Marjan Maro Zovko · Lars Blessing · Francesco Andrea Baldoni</div>
     <h1 class="mega">Guro Goes Green<span data-i="splashTag"></span></h1>
     <p class="lead" data-i="splashLead"></p>
     <button class="enter" id="enterBtn" data-i="enter"></button>
@@ -274,7 +282,7 @@ svg text{font-family:Poppins,'Noto Sans KR'}
       <div id="toast"></div>
     </div>
     <aside id="side">
-      <button id="sheetBtn"><span class="grab"></span><span id="sheetTxt"></span></button>
+      <button id="sheetBtn"><span class="grab"></span><span id="sheetSum"></span><span id="sheetTxt"></span></button>
       <div id="panel"></div>
     </aside>
   </main>
@@ -478,6 +486,7 @@ const TAPFIX = s => COARSE && typeof s === 'string' ? s.replace(/Double-click/g,
 const T = (en, ko) => TAPFIX(LANG === 'ko' ? ko : en);
 const STR = {
   kth:['KTH Royal Institute of Technology · MJ2511 Energy Management','KTH 왕립공과대학교 · MJ2511 에너지 관리'],
+  teamLbl:['Team:','팀:'],
   splashTag:['Dig once, charge everywhere.','한 번 파고, 어디서나 충전.'],
   splashLead:["One shared trench for Guro's new 5th-generation heat network and curbside EV chargers. Pick any street in Guro and see what it means for you.",
               '구로의 5세대 지역냉난방망과 도로변 전기차 충전기를 하나의 공동 굴착으로 함께 설치합니다. 구로의 어느 도로든 골라, 당신에게 어떤 의미인지 확인해 보세요.'],
@@ -757,7 +766,7 @@ document.querySelectorAll('#curSeg button').forEach(b=>b.onclick=()=>{S.cur=b.da
 document.getElementById('toolsToggle').onclick=()=>{ document.getElementById('legend').classList.remove('open'); document.getElementById('tools').classList.toggle('open'); };
 document.getElementById('legendBtn').onclick=()=>{ document.getElementById('tools').classList.remove('open'); document.getElementById('legend').classList.toggle('open'); };
 function setSheet(up){ const m=document.querySelector('main'); m.classList.toggle('up',up);
-  document.getElementById('sheetTxt').textContent = up ? T('Back to map','지도 보기') : T('More details','자세히 보기');
+  document.getElementById('sheetTxt').textContent = up ? T('Back to map','지도 보기') : T('Show details','자세히 보기');
   document.getElementById('sheetBtn').classList.toggle('isup',up);
   if(map&&map.resize) setTimeout(()=>map.resize(),30); }
 document.getElementById('sheetBtn').onclick=()=>setSheet(!document.querySelector('main').classList.contains('up'));
@@ -1087,10 +1096,25 @@ function header(list, R){
    <div class="kpis" style="margin-top:10px">${kChg}${k2}</div>${dens}</div>`;
 }
 
+function sheetSummary(R,list){
+  const el=document.getElementById('sheetSum'); if(!el) return;
+  if(!mapReady){ el.textContent=T('Loading the map…','지도를 불러오는 중…'); return; }
+  if(!R){ el.textContent=T('Tap a street to see its numbers','도로를 탭하면 숫자를 볼 수 있습니다'); return; }
+  const f=S.corridors.find(c=>c.id===S.focus), name=f?cname(f):T(`${list.length} streets`,`도로 ${list.length}개`), F=fin(R);
+  let m='';
+  if(S.actor==='operator') m = F.npv>=0 ? `<span class="ok">${T('Worth building','설치할 가치 있음')}</span> · NPV ${money(F.npv)}` : `<span class="no">${T('Not profitable','수익성 없음')}</span> · NPV ${money(F.npv)}`;
+  else if(S.actor==='public'){ const R0=evalAll(list,{subsidy:0}), gap=S.scen==='today'?R0.gapToday:R0.gapDtD;
+    m = gap>0 ? `<span class="no">${T('Subsidy needed','보조금 필요')}</span> ${money(gap)}` : `<span class="ok">${T('No subsidy needed','보조금 필요 없음')}</span>`; }
+  else if(S.actor==='heat') m = `${T('Operator pays you','충전사업자 분담금')} ${money(R.contribution)}`;
+  else if(S.actor==='kepco') m = `${T('Peak','피크')} ${num(R.peakAC+R.peakDC,2)} MW · ${money(F.opex.elec+F.opex.cap)}${T('/yr','/년')}`;
+  else if(S.actor==='users'){ const n=S.me&&CH.length?nearest(S.me)[0]:null;
+    m = n ? `${T('Nearest charger','가장 가까운 충전기')} ${Math.round(n.d)} m` : `${R.ac+R.dc} ${T('chargers','대')} · ${priceKWh(P.priceAC)}`; }
+  el.innerHTML=`${name} · ${m}`;
+}
 function renderPanel(){
   const el=document.getElementById('panel'); if(!S.actor){el.innerHTML='';return}
-  if(!mapReady){ el.innerHTML=`<div class="empty"><div class="big">🗺️</div><p>${T('Loading the map of Guro…','구로 지도를 불러오는 중…')}</p></div>`; return; }
-  const list=scopeList(); const R=evalAll(list);
+  if(!mapReady){ sheetSummary(null,[]); el.innerHTML=`<div class="empty"><div class="big">🗺️</div><p>${T('Loading the map of Guro…','구로 지도를 불러오는 중…')}</p></div>`; return; }
+  const list=scopeList(); const R=evalAll(list); sheetSummary(R,list);
   if(!R){ el.innerHTML=`<div class="empty"><div class="big">🗺️</div><p><b>${T('Click a street on the map','지도에서 도로를 클릭하세요')}</b>${T(' to add it, or load the example street.',' 추가하거나 예시 도로를 불러오세요.')}</p><p class="note">${T('Every street is calculated with the same business model, adapted to its length, its crossings and how built-up the area around it is.','모든 도로는 같은 사업 모델로 계산되며, 길이·교차로 수·주변 건물 밀도에 맞게 조정됩니다.')}</p></div>`+(S.actor==='users'?usersPanel(null):''); bindAll(); return; }
   let h=header(list,R);
   h += ({operator:operatorPanel,heat:heatPanel,kepco:kepcoPanel,users:usersPanel,public:publicPanel})[S.actor](R,list);
@@ -1110,7 +1134,7 @@ function bindAll(){
   const hp=document.getElementById('heatPipe'); if(hp) hp.onchange=()=>{S.heatPipe=+hp.value||0; renderPanel();};
   document.querySelectorAll('[data-book]').forEach(b=>b.onclick=()=>openBooking(CH.find(x=>x.id===b.dataset.book)));
   document.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>{S.bookings=S.bookings.filter(x=>x.key!==b.dataset.cancel);renderPanel()});
-  document.querySelectorAll('[data-fly]').forEach(b=>b.onclick=e=>{e.preventDefault();const c=CH.find(x=>x.id===b.dataset.fly); if(c) map.flyTo({center:c.ll,zoom:17.5,pitch:60})});
+  document.querySelectorAll('[data-fly]').forEach(b=>b.onclick=e=>{e.preventDefault();const c=CH.find(x=>x.id===b.dataset.fly); if(!c) return; if(narrow()) setSheet(false); map.flyTo({center:c.ll,zoom:17.5,pitch:60})});
 }
 
 // ---------- OPERATOR ----------
