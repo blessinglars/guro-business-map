@@ -47,7 +47,12 @@ html[lang=ko] .kth{letter-spacing:.04em}
 .title{font-size:clamp(32px,5vw,54px);line-height:1;margin-top:18px}
 .title span{display:block;color:var(--yellow)}
 .who{font-size:20px;color:var(--gold);margin-bottom:14px}
-.actors{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:12px}
+.actors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.group{display:flex;flex-direction:column;gap:10px}
+.ghead{border-bottom:1px solid #4d6b55;padding-bottom:6px}
+.ghead h3{font-size:17px;color:#fff;letter-spacing:.06em}
+.ghead span{font-size:12px;color:var(--gold)}
+.group .actor{min-height:0}
 .actor{background:var(--green2);border:1px solid #4d6b55;border-radius:16px;padding:18px;text-align:left;color:#fff;transition:.15s;display:flex;flex-direction:column;gap:8px;min-height:200px}
 .actor:hover{border-color:var(--yellow);transform:translateY(-2px)}
 .actor .ic{font-size:26px}
@@ -149,7 +154,9 @@ svg text{font-family:Poppins,'Noto Sans KR'}
   .foot{padding:10px 16px;font-size:11px}
   .title{margin-top:12px}
   .lead{font-size:15px;margin:12px 0 18px}
-  .actors{grid-template-columns:1fr;gap:10px}
+  .actors{grid-template-columns:1fr;gap:16px}
+  .group{gap:8px}
+  .ghead h3{font-size:15px}
   .actor{min-height:0;padding:12px 14px;gap:4px;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
   .actor .ic{grid-row:1/4;font-size:28px}
   .actor h3{font-size:17px}
@@ -542,8 +549,8 @@ const ACTORS = {
     p:['You need a charger near home or on your route.','집 근처나 이동 경로에 충전기가 필요합니다.'],
     wants:['Where · price · free now? · book','위치 · 가격 · 이용 가능 여부 · 예약']},
   public:{ic:'🏛️',color:'#b8462f',
-    name:['State (MCEE) + Guro-gu','국가 (기후에너지환경부) + 구로구'],short:['State + Guro-gu','국가 + 구로구'],
-    p:['The ministry and the district coordinate street works and decide whether to subsidise.','정부 부처와 구청이 도로 공사를 조정하고 보조금 지원 여부를 결정합니다.'],
+    name:['Municipality · Guro-gu','구청 · 구로구'],short:['Guro-gu','구로구'],
+    p:['You approve and coordinate the street works and decide whether to subsidise.','도로 공사를 승인·조정하고 보조금 지원 여부를 결정합니다.'],
     wants:['Total cost · subsidy needed · PM2.5 before/after','총사업비 · 필요 보조금 · PM2.5 변화']}
 };
 const A = k => { const a = ACTORS[k], i = LANG==='ko'?1:0; return {ic:a.ic,color:a.color,name:a.name[i],short:a.short[i],p:a.p[i],wants:a.wants[i]}; };
@@ -643,12 +650,23 @@ const scenTxt = () => S.scen==='today' ? T("today's charger use in Seoul",'현�
 // ===================================================================
 //  Splash + role picker
 // ===================================================================
+// Roles grouped by what they do in the dig-once project
+const GROUPS = [
+  {name:['Builders & Investors','건설 · 투자자'], sub:['They build and pay for the shared trench','공동 굴착을 건설하고 투자합니다'], keys:['operator','heat']},
+  {name:['Enablers','지원 기관'], sub:['They make the project possible','사업이 가능하도록 지원합니다'], keys:['public','kepco']},
+  {name:['Users','이용자'], sub:['They use the chargers','충전기를 이용합니다'], keys:['users']},
+];
 function buildActors(){
-  const grid=document.getElementById('actorGrid'); grid.innerHTML='';
-  for(const k of Object.keys(ACTORS)){ const a=A(k);
-    const b=document.createElement('button'); b.className='actor';
-    b.innerHTML=`<div class="ic">${a.ic}</div><h3>${a.name}</h3><p>${a.p}</p><div class="wants">${a.wants}</div>`;
-    b.onclick=()=>chooseActor(k); grid.appendChild(b); }
+  const grid=document.getElementById('actorGrid'); grid.innerHTML=''; const i=LANG==='ko'?1:0;
+  for(const g of GROUPS){
+    const col=document.createElement('div'); col.className='group';
+    col.innerHTML=`<div class="ghead"><h3>${g.name[i]}</h3><span>${g.sub[i]}</span></div>`;
+    for(const k of g.keys){ const a=A(k);
+      const b=document.createElement('button'); b.className='actor';
+      b.innerHTML=`<div class="ic">${a.ic}</div><h3>${a.name}</h3><p>${a.p}</p><div class="wants">${a.wants}</div>`;
+      b.onclick=()=>chooseActor(k); col.appendChild(b); }
+    grid.appendChild(col);
+  }
 }
 function show(id){ for(const s of ['splash','intro']) document.getElementById(s).style.display = s===id?'flex':'none'; }
 document.getElementById('enterBtn').onclick=()=>show('intro');
@@ -1141,7 +1159,7 @@ function bindAll(){
 function operatorPanel(R){
   const F=fin(R), ok=F.npv>=0;
   const capex=[[T('Chargers (AC + DC)','충전기 (AC + DC)'),R.equip],[T('KEPCO grid connection','한전 전력망 연결'),R.grid],[T('Trench: cables & conduits','굴착: 케이블·전선관'),R.cables],[T('Trench: contribution to heat utility','굴착: 열공급사업자 분담금'),R.contribution]];
-  if(R.subsidyKRW) capex.push([T('State subsidy','국가 보조금'),-R.subsidyKRW,'#c2a24e']);
+  if(R.subsidyKRW) capex.push([T('Public subsidy','공공 보조금'),-R.subsidyKRW,'#c2a24e']);
   return `<div class="pcard"><div class="verdict ${ok?'':'no'}"><div class="kicker" style="color:${ok?'var(--gold)':'#ffd9cf'}">${T('Should you build here?','여기에 설치해야 할까요?')}</div>
     <div class="big">${ok?T('YES, IT PAYS','네, 수익성이 있습니다'):T('NOT AT THESE NUMBERS','현재 조건으로는 어렵습니다')}</div>
     <p>NPV ${money(F.npv)} ${T(`over ${P.years} years at ${pct(P.rate)}`,`(${P.years}년, 할인율 ${pct(P.rate)})`)} · IRR ${F.irr==null?'n/a':pct(F.irr,1)} · ${T('payback','회수기간')} ${yrs(F.pay)}</p></div>
@@ -1165,7 +1183,7 @@ function operatorPanel(R){
      ${cashChart(R.capexDig,F.net)}</div>
    <div class="pcard"><div class="kicker">${T('Change the conditions','조건을 바꿔보세요')}</div>
      ${slider('sContrib',T('Your share of the shared civil works','공동 토목공사비 분담 비율'),0,100,5,Math.round(P.contrib*100),v=>v+'%')}
-     ${slider('sSub',T('State subsidy on charger hardware','충전기 설비 국가 보조금'),0,100,5,Math.round(P.subsidy*100),v=>v+'%')}
+     ${slider('sSub',T('Public subsidy on charger hardware','충전기 설비 공공 보조금'),0,100,5,Math.round(P.subsidy*100),v=>v+'%')}
      ${slider('sPAC',T('AC price (KRW/kWh)','AC 충전요금 (원/kWh)'),200,450,5,P.priceAC,v=>'₩'+v)}
      ${slider('sPDC',T('DC price (KRW/kWh)','DC 충전요금 (원/kWh)'),250,500,5,P.priceDC,v=>'₩'+v)}
      ${slider('sEV',T('EV share of cars','전기차 비율'),10,100,5,Math.round(P.evShare*100),v=>v+'%')}
